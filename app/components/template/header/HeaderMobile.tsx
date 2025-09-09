@@ -1,12 +1,8 @@
 import { User, ShoppingCart, Heart, Search } from "lucide-react";
 import { InputWithIcon } from "~/components/ui/input";
 import { Link } from "react-router";
-import type { HeaderProps } from ".";
 
-export default function HeaderMobile({
-    onWishlistClicked,
-    onLoginClicked,
-}: HeaderProps) {
+export default function HeaderMobile({ user }: { user: any }) {
     const iconStroke = 1.5;
     const iconSize = 16;
     const IconWrapper = ({
@@ -36,7 +32,7 @@ export default function HeaderMobile({
                     />
                 </Link>
                 <div className="flex items-center">
-                    <IconWrapper onClick={onWishlistClicked}>
+                    <IconWrapper>
                         <Heart size={iconSize} strokeWidth={iconStroke} />
                     </IconWrapper>
                     <Link to="cart">
@@ -49,7 +45,7 @@ export default function HeaderMobile({
                     </Link>
                     <IconWrapper
                         onClick={() => {
-                            onLoginClicked?.();
+                            // onLoginClicked?.();
                         }}
                     >
                         <User size={iconSize} strokeWidth={iconStroke} />
