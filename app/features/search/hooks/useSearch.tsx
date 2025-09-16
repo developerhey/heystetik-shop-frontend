@@ -13,12 +13,12 @@ export const useSearch = ({
     initialHasNextPage: boolean;
     initialFilters: { category?: string; skinType?: string; concern?: string };
 }) => {
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [searchParams] = useSearchParams();
     const [moreSkincareList, setMoreSkincareList] = useState<ProductListUI>([]);
     const [page, setPage] = useState(2);
     const [hasNextPage, setHasNextPage] = useState(initialHasNextPage);
     const [isLoading, setIsLoading] = useState(false);
-    const navigation = useNavigation();
 
     useEffect(() => {
         setMoreSkincareList([]);
@@ -61,5 +61,7 @@ export const useSearch = ({
         fetchSkincareList,
         hasNextPage,
         isLoading,
+        isFilterOpen,
+        setIsFilterOpen,
     };
 };

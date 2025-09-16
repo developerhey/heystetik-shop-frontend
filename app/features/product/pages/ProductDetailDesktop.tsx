@@ -1,9 +1,9 @@
+// ProductDetailDesktop.tsx
 import { ArrowLeft, ShoppingCart } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import type { ProductUI } from "~/shared/schemas/product-ui-schema";
 import { LoadingOverlay } from "~/components/ui/loading";
-import { useEffect, useState } from "react";
 import {
     Carousel,
     CarouselContent,
@@ -11,8 +11,7 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "~/components/ui/carousel";
-import { useFetcher } from "react-router";
-import { toast } from "sonner";
+import { useProductDetail } from "./useProductDetail";
 
 function DetailRow({ label, value }: { label: string; value: string }) {
     return (
@@ -38,9 +37,7 @@ function InputQuantity({
                 size="icon"
                 variant={"outline"}
                 disabled={qty === 1}
-                onClick={() => {
-                    if (qty > 1) onQtyChange(qty - 1);
-                }}
+                onClick={() => qty > 1 && onQtyChange(qty - 1)}
             >
                 -
             </Button>
@@ -48,10 +45,8 @@ function InputQuantity({
             <Button
                 size="icon"
                 variant={"outline"}
-                disabled={qty === totalStock}
-                onClick={() => {
-                    if (qty <= totalStock) onQtyChange(qty + 1);
-                }}
+                // disabled={qty === totalStock}
+                onClick={() => onQtyChange(qty + 1)}
             >
                 +
             </Button>
@@ -60,26 +55,13 @@ function InputQuantity({
 }
 
 export function ProductDetailDesktop({ product }: { product: ProductUI }) {
-    const [qty, setQty] = useState(1);
-    const fetcher = useFetcher();
-    const loading =
-        fetcher.state === "submitting" || fetcher.state === "loading";
-
-    useEffect(() => {
-        if (fetcher.data?.success && !loading) {
-            toast.success(fetcher.data.message, { duration: 1500 });
-        }
-
-        if (fetcher.data?.error && !loading) {
-            toast.error(fetcher.data.error, { duration: 1500 });
-        }
-    }, [fetcher.data, loading]);
+    const { qty, setQty, addToCart, loading } = useProductDetail(
+        product.id,
+        product.minOrder
+    );
 
     return (
         <div className="flex flex-col px-54 pt-12 pb-24 min-h-screen">
-            {/* <div className="mb-2">
-                <Button variant={"link"} className="text-sm text-foreground font-medium"><ArrowLeft />Kembali</Button>
-            </div> */}
             <div className="grid grid-cols-[30rem_1fr] gap-x-12">
                 <Carousel className="w-[90%] h-[25rem]">
                     <CarouselContent>
@@ -101,12 +83,11 @@ export function ProductDetailDesktop({ product }: { product: ProductUI }) {
                 <div>
                     <h1 className="text-2xl font-bold">{product.brand}</h1>
                     <p className="text-gray-600 mb-2">{product.title}</p>
-                    {!product.formattedPriceWithDiscount && (
+                    {!product.formattedPriceWithDiscount ? (
                         <p className="text-2xl font-semibold text-black mb-4">
                             {product.formattedPrice}
                         </p>
-                    )}
-                    {product.formattedPriceWithDiscount && (
+                    ) : (
                         <>
                             <p className="text-md text-muted-foreground line-through">
                                 {product.formattedPrice}
@@ -120,22 +101,14 @@ export function ProductDetailDesktop({ product }: { product: ProductUI }) {
                     <div className="flex items-center gap-2 mb-6 !font-bold">
                         <InputQuantity
                             totalStock={product.stock}
-                            onQtyChange={setQty}
                             qty={qty}
+                            onQtyChange={setQty}
                         />
                         <Button
                             variant="outline"
                             size={"icon"}
-                            disabled={qty < product.minOrder}
-                            onClick={() => {
-                                fetcher.submit(
-                                    { productId: product.id, qty },
-                                    {
-                                        method: "post",
-                                        action: "/api/add-to-cart",
-                                    }
-                                );
-                            }}
+                            // disabled={qty < product.minOrder}
+                            onClick={addToCart}
                         >
                             <ShoppingCart />
                         </Button>
@@ -189,21 +162,10 @@ export function ProductDetailDesktop({ product }: { product: ProductUI }) {
                         <TabsContent value="detail" className="pt-4">
                             <div className="divide-gray-200 gap-y-2 flex flex-col">
                                 <DetailRow
-                                    label="Min. Pembelian"
-                                    value={product.minOrder.toString()}
-                                />
-                                <hr />
-                                <DetailRow
-                                    label="Stok"
-                                    value={product.stock.toString()}
-                                />
-                                <hr />
-                                <DetailRow
                                     label="Kategori"
                                     value={product.category}
                                 />
                                 <hr />
-
                                 <DetailRow
                                     label="Etalase Skincare"
                                     value={product.display}

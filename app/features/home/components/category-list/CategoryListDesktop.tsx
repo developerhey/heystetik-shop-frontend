@@ -24,7 +24,7 @@ export default function CategoryListDesktop({ categories }: CategoryListProps) {
         <section className="w-full flex flex-col mt-12 px-54">
             <hr />
             <div className="text-2xl font-semibold my-4 text-center">
-                Kategori Produk
+                Kategori Skincare
             </div>
             <hr />
             <div className="grid grid-cols-3 gap-4 my-12">

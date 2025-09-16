@@ -1,8 +1,7 @@
 import FilterItemDropdown from "~/features/search/components/FilterItemDropdown";
 import type { FilterListProps } from ".";
 import { cn } from "~/lib/utils";
-import { useNavigate, useSearchParams } from "react-router";
-import { useCallback } from "react";
+import { useFilters } from "~/features/search/hooks/useFilters";
 
 export function FilterListDesktop({
     className,
@@ -10,43 +9,7 @@ export function FilterListDesktop({
     concerns,
     skinTypes,
 }: FilterListProps) {
-    const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
-
-    const handleFilter = useCallback(
-        (id: string, type: string) => {
-            const params = new URLSearchParams(searchParams);
-
-            if (id && params.get(type) !== id) {
-                params.set(type, id);
-            } else {
-                params.delete(type);
-            }
-
-            navigate(
-                {
-                    search: `?${params.toString()}`,
-                },
-                {
-                    replace: true,
-                    preventScrollReset: false,
-                }
-            );
-        },
-        [searchParams, navigate]
-    );
-
-    const handleReset = useCallback(() => {
-        navigate(
-            {
-                search: "",
-            },
-            {
-                replace: true,
-                preventScrollReset: false,
-            }
-        );
-    }, [navigate]);
+    const { handleFilter, handleReset } = useFilters();
 
     return (
         <aside className={cn("flex flex-col gap-y-2", className)}>
@@ -60,22 +23,22 @@ export function FilterListDesktop({
                 </span>
             </div>
             <FilterItemDropdown
-                label={"Categories"}
-                type={"category"}
+                label="Categories"
+                type="category"
                 items={categoriesSkinCare}
                 isOpen={true}
                 onSelected={(id) => handleFilter(id, "category")}
             />
             <FilterItemDropdown
-                label={"Skin Types"}
-                type={"skinType"}
+                label="Skin Types"
+                type="skinType"
                 items={skinTypes}
                 isOpen={false}
                 onSelected={(id) => handleFilter(id, "skinType")}
             />
             <FilterItemDropdown
-                type={"concern"}
-                label={"Concerns"}
+                type="concern"
+                label="Concerns"
                 items={concerns}
                 isOpen={false}
                 onSelected={(id) => handleFilter(id, "concern")}

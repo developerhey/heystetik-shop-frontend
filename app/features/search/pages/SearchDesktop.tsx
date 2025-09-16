@@ -2,7 +2,7 @@ import Product from "~/features/product/components/product";
 import { FilterListDesktop } from "~/features/search/components/filter-list";
 import type { SearchProps } from "~/features/search/pages";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { useSearch } from "./useSearch";
+import { useSearch } from "../hooks/useSearch";
 import { useSearchParams } from "react-router";
 
 export function SearchDesktop(props: SearchProps) {
@@ -23,7 +23,7 @@ export function SearchDesktop(props: SearchProps) {
     return (
         <div className="flex flex-col pt-4 pb-8">
             <h1 className="text-2xl font-bold text-center my-4 bg-primary rounded-md mx-54 py-16 text-white">
-                {category ? category : "Semua Produk"}
+                {category ? category : "Semua Skincare"}
             </h1>
             <div className="grid grid-cols-[250px_1fr] mt-8 px-54">
                 <FilterListDesktop

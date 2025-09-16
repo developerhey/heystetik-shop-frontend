@@ -36,7 +36,7 @@ export default function FilterDrawer({
                     />
                 </ScrollArea>
                 <hr />
-                <DrawerFooter className="grid grid-cols-2">
+                <DrawerFooter className="grid grid-cols-1">
                     <Button
                         variant="outline"
                         size={"lg"}
@@ -44,9 +44,8 @@ export default function FilterDrawer({
                             onOpenChange(false);
                         }}
                     >
-                        Cancel
+                        Tutup
                     </Button>
-                    <Button size={"lg"}>Submit</Button>
                 </DrawerFooter>
             </DrawerContent>
         </Drawer>

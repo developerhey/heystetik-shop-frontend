@@ -7,6 +7,7 @@ export default function HeaderDesktop({ user }: { user: any }) {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const { setOpenLogin } = useDialogStore();
+    
     const iconStroke = 1.5;
     const iconSize = 25;
     const IconWrapper = ({
