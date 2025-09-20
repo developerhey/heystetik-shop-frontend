@@ -2,8 +2,10 @@ import { User, ShoppingCart, Heart, Search, ArrowLeft } from "lucide-react";
 import { InputWithIcon } from "~/components/ui/input";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { useLocation } from "react-router";
+import { useDialogStore } from "~/shared/stores/useDialogStore";
 export default function HeaderMobile({ user }: { user: any }) {
     const navigate = useNavigate();
+    const { setOpenLogin } = useDialogStore();
     const [searchParams] = useSearchParams();
     const location = useLocation();
     const pathname = location.pathname;
@@ -64,7 +66,7 @@ export default function HeaderMobile({ user }: { user: any }) {
                     </Link>
                     <IconWrapper
                         onClick={() => {
-                            // onLoginClicked?.();
+                            setOpenLogin(true);
                         }}
                     >
                         <User size={iconSize} strokeWidth={iconStroke} />
