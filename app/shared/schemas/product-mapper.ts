@@ -11,7 +11,9 @@ import type {
 export function mapProductResponseToUI(
     response?: ProductResponse | null | undefined,
     qty?: number | null | undefined,
-    notes?: string | null | undefined
+    notes?: string | null | undefined,
+    cartId?: number | null | undefined,
+    wishlishId?: number | null | undefined
 ): ProductUI {
     const price = response?.price ?? 0;
 
@@ -43,6 +45,8 @@ export function mapProductResponseToUI(
 
     return {
         id: response?.skincare_detail?.product_id ?? 0,
+        cartId: cartId ?? 0,
+        wishlishId: wishlishId ?? 0,
         title: response?.name ?? "",
         brand: response?.skincare_detail?.brand ?? "",
         description: response?.skincare_detail?.description ?? "",

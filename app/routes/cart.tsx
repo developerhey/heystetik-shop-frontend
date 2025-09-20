@@ -9,7 +9,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     const cookieHeader = request.headers.get("Cookie");
     const session = await getSession(cookieHeader);
     const accessToken = session.get("access_token") ?? "";
-    const carts = await getCartList(accessToken, { page: 1, take: 8 });
+    const carts = await getCartList(accessToken);
     return {
         carts: mapCartListResponseToUI(carts),
     };
@@ -18,5 +18,9 @@ export async function loader({ request }: Route.LoaderArgs) {
 export default function Cart({ loaderData }: Route.ComponentProps) {
     const { carts } = loaderData;
     const { isMobile } = useOutletContext<ContextType>();
-    return isMobile ? <CartPageMobile /> : <CartPageDesktop carts={carts} />;
+    return isMobile ? (
+        <CartPageMobile carts={carts} />
+    ) : (
+        <CartPageDesktop carts={carts} />
+    );
 }

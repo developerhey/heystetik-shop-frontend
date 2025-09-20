@@ -26,16 +26,16 @@ const api: AxiosInstance = axios.create({
     headers: { "Content-Type": "application/json" },
 });
 
-// api.interceptors.request.use((request) => {
-//     // write down your request intercept.
-//     return AxiosLogger.requestLogger(request, {
-//         prefixText: "your prefix",
-//         dateFormat: "HH:MM:ss",
-//         headers: true,
-//         params: true,
-//         url: true
-//     });
-// });
+api.interceptors.request.use((request) => {
+    // write down your request intercept.
+    return AxiosLogger.requestLogger(request, {
+        prefixText: "your prefix",
+        dateFormat: "HH:MM:ss",
+        headers: true,
+        params: true,
+        url: true
+    });
+});
 
 // Request interceptor to automatically add auth token
 // api.interceptors.request.use(

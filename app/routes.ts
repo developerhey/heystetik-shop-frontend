@@ -12,6 +12,8 @@ export default [
     route("cart", "routes/cart.tsx"),
     ...prefix("api", [
         route("login", "routes/api/login.ts"),
-        route("add-to-cart", "routes/api/cart.ts"),
+        route("add-to-cart", "routes/api/add-cart.ts"),
+        route("update-cart", "routes/api/update-cart.ts"),
+        route("delete-from-cart", "routes/api/delete-cart.ts"),
     ]),
 ] satisfies RouteConfig;

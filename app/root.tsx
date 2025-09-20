@@ -76,8 +76,6 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     let details = "An unexpected error occurred.";
     let stack: string | undefined;
 
-    // handle require login
-    console.log(error);
     if (isApiError(error)) {
         if (
             error.status == 401 ||

@@ -1,4 +1,3 @@
-import { Trash } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import {
     Card,
@@ -9,8 +8,20 @@ import {
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import type { ProductListUI } from "~/shared/schemas/product-ui-schema";
-
+import { useCart } from "../hooks/useCart";
+import { LoadingOverlay } from "~/components/ui/loading";
+import { CartDesktop } from "../components";
 export function CartPageDesktop({ carts }: { carts: ProductListUI }) {
+    const {
+        handleDeleteFromCart,
+        loading,
+        updateQty,
+        updateNotes,
+        localNotes,
+        localQty,
+        summary,
+    } = useCart({ carts });
+
     return (
         <div className="w-full px-54 py-12 grid grid-cols-3 gap-6 bg-muted">
             <div className="col-span-2 bg-white rounded-md p-6 border border-gray-200">
@@ -24,76 +35,45 @@ export function CartPageDesktop({ carts }: { carts: ProductListUI }) {
                     <div className="text-right">Total</div>
                 </div>
 
-                {/* Item Row */}
-                {carts.map((cart, key) => (
-                    <div
-                        key={key}
-                        className="grid grid-cols-5 items-center border-b py-4 text-sm"
-                    >
-                        {/* Produk */}
-                        <div className="col-span-2 flex items-center gap-3">
-                            <img
-                                src={cart.images[0]?.path || ""}
-                                alt={cart.title}
-                                className="w-16 h-16 object-fill border rounded-md shrink-0"
-                            />
-                            <div>
-                                <p className="font-medium">{cart.brand}</p>
-                                <p className="text-gray-500 line-clamp-2">
-                                    {cart.title}
-                                </p>
-                            </div>
-                        </div>
+                {carts.map((cart, key) => {
+                    const qty = localQty[cart.cartId.toString()] ?? cart.qty;
+                    const notes =
+                        localNotes[cart.cartId.toString()] ?? cart.notes;
+                    return (
+                        <CartDesktop
+                            key={key}
+                            cart={cart}
+                            qty={qty}
+                            notes={notes}
+                            onDecrement={() => {
+                                if (qty > 1) {
+                                    updateQty(
+                                        cart.cartId.toString(),
+                                        qty - 1,
+                                        notes
+                                    );
+                                }
+                            }}
+                            onIncrement={() =>
+                                updateQty(
+                                    cart.cartId.toString(),
+                                    qty + 1,
+                                    notes
+                                )
+                            }
+                            onDelete={() =>
+                                handleDeleteFromCart(cart.cartId.toString())
+                            }
+                            onUpdateNotes={(notes) =>
+                                updateNotes(cart.cartId.toString(), qty, notes)
+                            }
+                        />
+                    );
+                })}
 
-                        {/* Harga */}
-                        <div className="text-right">
-                            {cart.formattedPriceWithDiscount ? (
-                                <div className="flex flex-col items-end">
-                                    <span className="text-xs text-gray-400 line-through">
-                                        {cart.formattedPrice}
-                                    </span>
-                                    <span className="font-semibold text-red-600">
-                                        {cart.formattedPriceWithDiscount}
-                                    </span>
-                                </div>
-                            ) : (
-                                <span className="text-gray-700">
-                                    {cart.formattedPrice}
-                                </span>
-                            )}
-                        </div>
-
-                        {/* Jumlah */}
-                        <div className="flex items-center justify-center gap-2">
-                            <Button
-                                className="h-7 w-7"
-                                size="icon"
-                                variant="outline"
-                            >
-                                -
-                            </Button>
-                            <span className="w-6 text-center">{cart.qty}</span>
-                            <Button
-                                className="h-7 w-7"
-                                size="icon"
-                                variant="outline"
-                            >
-                                +
-                            </Button>
-                        </div>
-
-                        {/* Total + Trash */}
-                        <div className="flex items-center justify-end gap-3">
-                            <p className="font-semibold text-gray-800">
-                                {cart.totalFormattedPrice}
-                            </p>
-                            <Trash
-                                className="cursor-pointer text-gray-400 hover:text-red-500"
-                                size={16}
-                            />
-                        </div>
-                    </div>
-                ))}
+                {carts.length === 0 && (
+                    <p className="mt-4">Tidak ada produk dalam keranjang</p>
+                )}
             </div>
 
             <div className="space-y-6">
@@ -130,16 +110,20 @@ export function CartPageDesktop({ carts }: { carts: ProductListUI }) {
                     <CardContent className="flex flex-col gap-y-2">
                         <div className="flex justify-between text-sm text-gray-500">
                             <span>Items</span>
-                            <span>1</span>
+                            <span>{summary.items}</span>
                         </div>
                         <div className="flex justify-between text-sm text-gray-500">
                             <span>Subtotal</span>
-                            <span>Rp 65.400</span>
+                            <span>
+                                Rp {summary.subtotal.toLocaleString("id-ID")}
+                            </span>
                         </div>
                         <hr />
                         <div className="flex justify-between font-semibold">
                             <span>Total</span>
-                            <span>Rp 65.400</span>
+                            <span>
+                                Rp {summary.subtotal.toLocaleString("id-ID")}
+                            </span>
                         </div>
                     </CardContent>
                     <CardFooter>
@@ -147,6 +131,7 @@ export function CartPageDesktop({ carts }: { carts: ProductListUI }) {
                     </CardFooter>
                 </Card>
             </div>
+            <LoadingOverlay show={loading} />
         </div>
     );
 }

@@ -11,6 +11,7 @@ const CartSchema = z.object({
     product_id: z.number().int().nonnegative().nullish(),
     qty: z.number().int().nonnegative().nullish(),
     product: ProductSchema.nullish(),
+    notes: z.string().nullish(),
 });
 
 export const AddCartResponseSchema = BaseResponseDataSchema(CartSchema);

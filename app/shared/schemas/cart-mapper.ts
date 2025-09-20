@@ -10,7 +10,9 @@ export function mapCartResponseToProductUI(
 ): ProductUI {
     const productUi = mapProductResponseToUI(
         response?.product,
-        response?.qty ?? 0
+        response?.qty ?? 0,
+        response?.notes ?? "",
+        response?.id
     );
     return productUi;
 }

@@ -1,5 +1,5 @@
 import { addItemToCart } from "~/shared/services/cart-service";
-import type { Route } from "./+types/cart";
+import type { Route } from "./+types/add-cart";
 import { data } from "react-router";
 import { getSession } from "~/sessions.server";
 
@@ -14,7 +14,7 @@ export async function action({ request }: Route.ActionArgs) {
     };
 
     try {
-        const response = await addItemToCart(accessToken, {
+        await addItemToCart(accessToken, {
             qty: props.qty,
             product_id: props.productId,
         });

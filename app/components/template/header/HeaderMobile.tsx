@@ -1,8 +1,10 @@
 import { User, ShoppingCart, Heart, Search, ArrowLeft } from "lucide-react";
 import { InputWithIcon } from "~/components/ui/input";
-import { Link } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { useLocation } from "react-router";
 export default function HeaderMobile({ user }: { user: any }) {
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const location = useLocation();
     const pathname = location.pathname;
     const iconStroke = 1.5;
@@ -44,9 +46,7 @@ export default function HeaderMobile({ user }: { user: any }) {
                     >
                         <ArrowLeft size={iconSize} />
                         <span className="text-sm">
-                            {pathname == "/search"
-                                ? "Skincare"
-                                : ""}
+                            {pathname == "/search" ? "Skincare" : ""}
                         </span>
                     </div>
                 )}
@@ -76,6 +76,22 @@ export default function HeaderMobile({ user }: { user: any }) {
                 sizeIcon={16}
                 placeholder="Kamu butuh apa? Cari disini yuk"
                 className="rounded-sm mt-2 text-sm"
+                onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                        const params = new URLSearchParams(searchParams);
+                        params.set("q", e.currentTarget.value);
+                        navigate(
+                            {
+                                pathname: "/search",
+                                search: `?${params.toString()}`,
+                            },
+                            {
+                                replace: true,
+                                preventScrollReset: false,
+                            }
+                        );
+                    }
+                }}
             />
         </header>
     );

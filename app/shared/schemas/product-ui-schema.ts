@@ -6,6 +6,8 @@ const ProductImageUISchema = z.strictObject({
 
 const ProductUISchema = z.strictObject({
     id: z.int().nonnegative(),
+    cartId: z.int().nonnegative(),
+    wishlishId: z.int().nonnegative(),
     brand: z.string(),
     title: z.string(),
     description: z.string(),

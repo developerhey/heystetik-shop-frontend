@@ -2,47 +2,56 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Separator } from "~/components/ui/separator";
-
-export function CartPageMobile() {
+import { type ProductListUI } from "~/shared/schemas/product-ui-schema";
+import { useCart } from "../hooks/useCart";
+import { CartMobile } from "../components";
+import { LoadingOverlay } from "~/components/ui/loading";
+export function CartPageMobile({ carts }: { carts: ProductListUI }) {
+    const {
+        handleDeleteFromCart,
+        loading,
+        updateQty,
+        updateNotes,
+        localNotes,
+        localQty,
+        summary,
+    } = useCart({ carts });
     return (
         <div className="p-4 space-y-2 bg-muted">
             {/* Cart Title */}
             <h2 className="text-lg font-semibold">Keranjang</h2>
 
             {/* Product List */}
-            <Card className="shadow-none rounded-md">
-                <CardContent className="space-y-2">
-                    <div className="flex gap-3">
-                        <img
-                            src="/images/dummy_product.jpg"
-                            className="w-16 h-16 rounded-md object-cover"
-                            alt="Product"
-                        />
-                        <div className="flex-1">
-                            <p className="font-semibold">BONAVIE</p>
-                            <p className="text-sm text-muted-foreground">
-                                Eau de Parfum - Madeleine et Glacé 30ml
-                            </p>
-                            <p className="font-semibold mt-1">Rp 65.400</p>
-                        </div>
-                    </div>
-
-                    {/* Counter & Total */}
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <Button variant="outline" size="icon">
-                                -
-                            </Button>
-                            <span>1</span>
-                            <Button variant="outline" size="icon">
-                                +
-                            </Button>
-                        </div>
-                        <p className="font-semibold">Rp 65.400</p>
-                    </div>
-                </CardContent>
-            </Card>
-
+            {carts.map((cart, key) => {
+                const qty = localQty[cart.cartId.toString()] ?? cart.qty;
+                const notes = localNotes[cart.cartId.toString()] ?? cart.notes;
+                return (
+                    <CartMobile
+                        key={key}
+                        cart={cart}
+                        qty={qty}
+                        notes={notes}
+                        onDecrement={() => {
+                            if (qty > 1) {
+                                updateQty(
+                                    cart.cartId.toString(),
+                                    qty - 1,
+                                    notes
+                                );
+                            }
+                        }}
+                        onIncrement={() =>
+                            updateQty(cart.cartId.toString(), qty + 1, notes)
+                        }
+                        onDelete={() =>
+                            handleDeleteFromCart(cart.cartId.toString())
+                        }
+                        onUpdateNotes={(notes) =>
+                            updateNotes(cart.cartId.toString(), qty, notes)
+                        }
+                    />
+                );
+            })}
             {/* Promo Section */}
             <Card className="rounded-md shadow-none">
                 <CardContent className="space-y-2">
@@ -67,18 +76,24 @@ export function CartPageMobile() {
 
                     <div className="flex justify-between text-sm">
                         <span>Items</span>
-                        <span>1</span>
+                        <span>{summary.items}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                         <span>Subtotal</span>
-                        <span>Rp 65.400</span>
+                        <span>
+                            {" "}
+                            Rp {summary.subtotal.toLocaleString("id-ID")}
+                        </span>
                     </div>
 
                     <Separator />
 
                     <div className="flex justify-between font-semibold">
                         <span>Total</span>
-                        <span>Rp 65.400</span>
+                        <span>
+                            {" "}
+                            Rp {summary.subtotal.toLocaleString("id-ID")}
+                        </span>
                     </div>
 
                     <Button className="w-full mt-2" variant="default">
@@ -86,6 +101,7 @@ export function CartPageMobile() {
                     </Button>
                 </CardContent>
             </Card>
+            <LoadingOverlay show={loading} />
         </div>
     );
 }
