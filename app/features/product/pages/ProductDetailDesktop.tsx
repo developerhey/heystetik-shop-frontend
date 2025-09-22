@@ -1,5 +1,5 @@
 // ProductDetailDesktop.tsx
-import { ArrowLeft, ShoppingCart } from "lucide-react";
+import { Heart, Share2, ShoppingCart } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import type { ProductUI } from "~/shared/schemas/product-ui-schema";
@@ -12,6 +12,10 @@ import {
     CarouselPrevious,
 } from "~/components/ui/carousel";
 import { useProductDetail } from "./useProductDetail";
+import IconWrapper from "~/components/template/IconWrapper";
+import { useWishlist } from "~/shared/hooks/useWishlist";
+import { useRouteLoaderData } from "react-router";
+import { cn } from "~/lib/utils";
 
 function DetailRow({ label, value }: { label: string; value: string }) {
     return (
@@ -23,7 +27,6 @@ function DetailRow({ label, value }: { label: string; value: string }) {
 }
 
 function InputQuantity({
-    totalStock,
     qty,
     onQtyChange,
 }: {
@@ -55,9 +58,11 @@ function InputQuantity({
 }
 
 export function ProductDetailDesktop({ product }: { product: ProductUI }) {
-    const { qty, setQty, addToCart, loading } = useProductDetail(
-        product.id,
-        product.minOrder
+    const { qty, setQty, addToCart, loading } = useProductDetail(product.id);
+    const { loading: wishlistLoading, handleAddToWishlist, handleRemoveFromWishlist } = useWishlist();
+    const { wishlist } = useRouteLoaderData("root");
+    const isOnWishlist = wishlist.some(
+        (item: ProductUI) => item.id === product.id
     );
 
     return (
@@ -81,7 +86,31 @@ export function ProductDetailDesktop({ product }: { product: ProductUI }) {
                 </Carousel>
 
                 <div>
-                    <h1 className="text-2xl font-bold">{product.brand}</h1>
+                    <div className="flex flex-row justify-between items-center">
+                        <h1 className="text-2xl font-bold">{product.brand}</h1>
+                        <div className="flex flex-row">
+                            <IconWrapper
+                                onClick={() => {
+                                    if (isOnWishlist) {
+                                        handleRemoveFromWishlist(product.id);
+                                    } else {
+                                        handleAddToWishlist(product.id);
+                                    }
+                                }}
+                            >
+                                <Heart
+                                    size={16}
+                                    className={cn(
+                                        isOnWishlist &&
+                                            "fill-current text-destructive"
+                                    )}
+                                />
+                            </IconWrapper>
+                            <IconWrapper>
+                                <Share2 size={16} />
+                            </IconWrapper>
+                        </div>
+                    </div>
                     <p className="text-gray-600 mb-2">{product.title}</p>
                     {!product.formattedPriceWithDiscount ? (
                         <p className="text-2xl font-semibold text-black mb-4">
@@ -112,24 +141,26 @@ export function ProductDetailDesktop({ product }: { product: ProductUI }) {
                         >
                             <ShoppingCart />
                         </Button>
-                        <Button
-                            variant="default"
-                            size={"lg"}
-                            className="font-bold"
-                            onClick={() => {
-                                window.location.href =
-                                    "https://play.google.com/store/apps/details?id=com.desacode.heystetik_mobileapps";
-                            }}
-                        >
-                            Konsultasi Dulu
-                        </Button>
+                        {product.needConsult && (
+                            <Button
+                                variant="default"
+                                size={"lg"}
+                                className="font-bold"
+                                onClick={() => {
+                                    window.location.href =
+                                        "https://play.google.com/store/apps/details?id=com.desacode.heystetik_mobileapps";
+                                }}
+                            >
+                                Konsultasi Dulu
+                            </Button>
+                        )}
                         <Button
                             variant="outline"
                             size={"lg"}
                             className="border-primary font-bold text-primary"
                             disabled={qty < product.minOrder}
                         >
-                            Beli Sekarang
+                            Beli Langsung
                         </Button>
                     </div>
 
@@ -191,7 +222,7 @@ export function ProductDetailDesktop({ product }: { product: ProductUI }) {
                 </div>
             </div>
 
-            <LoadingOverlay show={loading} />
+            <LoadingOverlay show={loading || wishlistLoading} />
         </div>
     );
 }

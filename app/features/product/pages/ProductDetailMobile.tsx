@@ -1,5 +1,5 @@
 import { Button } from "~/components/ui/button";
-import { ArrowLeft, ChevronDown } from "lucide-react";
+import { Heart, Share2, ChevronDown } from "lucide-react";
 import {
     Collapsible,
     CollapsibleContent,
@@ -12,7 +12,10 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useCallback, useEffect, useState } from "react";
 import { cn } from "~/lib/utils";
-
+import IconWrapper from "~/components/template/IconWrapper";
+import { useWishlist } from "~/shared/hooks/useWishlist";
+import { LoadingOverlay } from "~/components/ui/loading";
+import { useRouteLoaderData } from "react-router";
 function DetailRow({ label, value }: { label: string; value: string }) {
     return (
         <div className="flex justify-between">
@@ -23,6 +26,12 @@ function DetailRow({ label, value }: { label: string; value: string }) {
 }
 
 export function ProductDetailMobile({ product }: { product: ProductUI }) {
+    const { wishlist } = useRouteLoaderData("root");
+    const isOnWishlist = wishlist.some(
+        (item: ProductUI) => item.id === product.id
+    );
+    const { addToCart, loading } = useProductDetail(product.id);
+    const { loading: wishlistLoading, handleAddToWishlist, handleRemoveFromWishlist } = useWishlist();
     const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
         Autoplay({ delay: 3000 }),
     ]);
@@ -38,10 +47,6 @@ export function ProductDetailMobile({ product }: { product: ProductUI }) {
         emblaApi.on("select", onSelect);
         onSelect(); // initial selection
     }, [emblaApi, onSelect]);
-    const { qty, addToCart, loading } = useProductDetail(
-        product.id,
-        product.minOrder
-    );
     return (
         <div className="flex flex-col pb-8">
             <div className="overflow-hidden relative" ref={emblaRef}>
@@ -75,7 +80,30 @@ export function ProductDetailMobile({ product }: { product: ProductUI }) {
                     ))}
                 </div>
             </div>
-            <h1 className="text-sm font-bold mt-4 px-4">{product.brand}</h1>
+            <div className="flex flex-row justify-between items-center">
+                <h1 className="text-sm font-bold mt-4 px-4">{product.brand}</h1>
+                <div className="flex flex-row">
+                    <IconWrapper
+                        onClick={() => {
+                            if (isOnWishlist) {
+                                handleRemoveFromWishlist(product.id);
+                            } else {
+                                handleAddToWishlist(product.id);
+                            }
+                        }}
+                    >
+                        <Heart
+                            size={16}
+                            className={cn(
+                                isOnWishlist && "fill-current text-destructive"
+                            )}
+                        />
+                    </IconWrapper>
+                    <IconWrapper>
+                        <Share2 size={16} />
+                    </IconWrapper>
+                </div>
+            </div>
             <p className="text-gray-600 mb-2 px-4">{product.title}</p>
             {!product.formattedPriceWithDiscount && (
                 <p className="text-xs font-semibold text-black mb-4 px-4">
@@ -172,24 +200,36 @@ export function ProductDetailMobile({ product }: { product: ProductUI }) {
             </div>
 
             <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50">
-                <div className="w-full grid grid-cols-[1fr_1fr_2.5rem] items-center gap-2">
-                    <Button
-                        variant="default"
-                        size={"lg"}
-                        className="font-bold"
-                        onClick={() => {
-                            window.location.href =
-                                "https://play.google.com/store/apps/details?id=com.desacode.heystetik_mobileapps";
-                        }}
-                    >
-                        Konsultasi Dulu
-                    </Button>
+                <div
+                    className={cn(
+                        "w-full grid items-center gap-2",
+                        product.needConsult
+                            ? "grid-cols-[1fr_1fr_2.5rem_2.5rem]"
+                            : "grid-cols-[1fr_2.5rem]"
+                    )}
+                >
+                    {product.needConsult && (
+                        <Button
+                            variant="default"
+                            size={"lg"}
+                            className="font-bold"
+                            onClick={() => {
+                                window.location.href =
+                                    "https://play.google.com/store/apps/details?id=com.desacode.heystetik_mobileapps";
+                            }}
+                        >
+                            Konsultasi Dulu
+                        </Button>
+                    )}
                     <Button
                         variant="outline"
-                        className="border-primary font-bold text-primary"
+                        className={cn(
+                            "border-primary font-bold text-primary",
+                            !product.needConsult && "w-full"
+                        )}
                         size={"lg"}
                     >
-                        Beli Sekarang
+                        Beli Langsung
                     </Button>
                     <Button
                         size={"icon"}
@@ -200,6 +240,7 @@ export function ProductDetailMobile({ product }: { product: ProductUI }) {
                     </Button>
                 </div>
             </div>
+            <LoadingOverlay show={loading || wishlistLoading} />
         </div>
     );
 }

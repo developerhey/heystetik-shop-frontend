@@ -3,28 +3,17 @@ import { InputWithIcon } from "~/components/ui/input";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { useLocation } from "react-router";
 import { useDialogStore } from "~/shared/stores/useDialogStore";
+import IconWrapper from "../IconWrapper";
+import { useRouteLoaderData } from "react-router";
 export default function HeaderMobile({ user }: { user: any }) {
     const navigate = useNavigate();
-    const { setOpenLogin } = useDialogStore();
+    const { setOpenLogin, setOpenWishlist } = useDialogStore();
+    const { wishlist, totalCart } = useRouteLoaderData("root");
     const [searchParams] = useSearchParams();
     const location = useLocation();
     const pathname = location.pathname;
     const iconStroke = 1.5;
     const iconSize = 16;
-    const IconWrapper = ({
-        children,
-        onClick,
-    }: {
-        children: React.ReactNode;
-        onClick?: () => void;
-    }) => (
-        <div
-            className="p-2 rounded-xl hover:bg-gray-100 cursor-pointer transition flex"
-            onClick={onClick}
-        >
-            {children}
-        </div>
-    );
 
     return (
         <header className="sticky top-0 w-full z-[999] bg-white border-b-2 border-primary p-4 flex flex-col">
@@ -53,11 +42,14 @@ export default function HeaderMobile({ user }: { user: any }) {
                     </div>
                 )}
                 <div className="flex items-center">
-                    <IconWrapper>
+                    <IconWrapper
+                        badgeCount={wishlist.length}
+                        onClick={() => setOpenWishlist(true)}
+                    >
                         <Heart size={iconSize} strokeWidth={iconStroke} />
                     </IconWrapper>
                     <Link to="cart">
-                        <IconWrapper>
+                        <IconWrapper badgeCount={totalCart}>
                             <ShoppingCart
                                 size={iconSize}
                                 strokeWidth={iconStroke}

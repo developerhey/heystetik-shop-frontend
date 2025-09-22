@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useFetcher } from "react-router";
 import { toast } from "sonner";
 
-export function useProductDetail(productId: number, minOrder: number) {
+export function useProductDetail(productId: number) {
     const [qty, setQty] = useState(1);
     const fetcher = useFetcher();
     const loading =

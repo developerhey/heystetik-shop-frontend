@@ -13,11 +13,6 @@ interface AddToCartParams {
     notes?: string;
 }
 
-interface GetCartListParams {
-    page: number;
-    take?: number;
-}
-
 export const addItemToCart = (token: string, params: AddToCartParams) => {
     return request<AddCartResponse>(
         {
@@ -63,18 +58,30 @@ export const deleteItemFromCart = (token: string, id: string) => {
 };
 
 export const getCartList = (token: string) => {
-    // const { page, take = 8 } = params;
-    // const queryParams: Record<string, any> = {
-    //     page,
-    //     take,
-    // };
-
     return request<CartListResponse>(
         {
             url: path,
             method: "GET",
             params: {
-                order: "desc"
+                order: "desc",
+            },
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        },
+        CartListResponseSchema
+    );
+};
+
+export const getTotalCartList = (token: string) => {
+    return request<CartListResponse>(
+        {
+            url: path,
+            method: "GET",
+            params: {
+                page: 1,
+                take: 1,
+                order: "desc",
             },
             headers: {
                 Authorization: `Bearer ${token}`,

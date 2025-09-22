@@ -29,6 +29,7 @@ const ProductUISchema = z.strictObject({
     minOrder: z.number().int().nonnegative(),
     qty: z.number().int().nonnegative(),
     notes: z.string(),
+    needConsult: z.boolean(),
 });
 
 const ProductListUISchema = z.array(ProductUISchema);

@@ -73,6 +73,7 @@ export function mapProductResponseToUI(
         minOrder: response?.min_order ?? 0,
         qty: qty ?? 0,
         notes: notes ?? "",
+        needConsult: response?.requires_prescription ?? false,
         images: (response?.media_products ?? [])
             .map((mp) => mp.media?.path)
             .filter((path): path is string => !!path)

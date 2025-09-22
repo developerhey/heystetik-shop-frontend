@@ -21,20 +21,36 @@ import {
     RequireLoginDesktop,
 } from "./components/template/require-login";
 import { type ApiError, isApiError } from "./lib/api";
-
+import WishlistSidebar from "./components/template/SidebarWishlist";
+import { getWishlistList } from "./shared/services/wishlist-service";
+import { mapWishlistListResponseToUI } from "./shared/schemas/wishlist-mapper";
+import { getTotalCartList } from "./shared/services/cart-service";
 export const links: Route.LinksFunction = () => [];
 
 export async function loader({ request }: Route.LoaderArgs) {
     const session = await getSession(request.headers.get("Cookie"));
+    const token = session.get("access_token") ?? "";
     const user = session.get("user");
     let userAgent = request.headers.get("user-agent");
     const ua = new UAParser(userAgent || "");
     const isMobile = ua.getDevice().type === "mobile";
-    return { request, isMobile, user };
+    if (!token) return { request, isMobile, user, wishlist: [], totalCart: 0 };
+
+    const [wishlist, cart] = await Promise.all([
+        getWishlistList(token),
+        getTotalCartList(token),
+    ]);
+    return {
+        request,
+        isMobile,
+        user,
+        wishlist: mapWishlistListResponseToUI(wishlist),
+        totalCart: cart?.data?.meta?.itemCount ?? 0,
+    };
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
-    const { isMobile, user } = useLoaderData<typeof loader>();
+    const { isMobile, user, wishlist } = useLoaderData<typeof loader>();
     return (
         <html lang="en">
             <head>
@@ -53,6 +69,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     <Header isMobile={isMobile} user={user} />
                     {children}
                     <LoginDialog isMobile={isMobile} />
+                    <WishlistSidebar wishlist={wishlist} />
                     <Toaster richColors position="top-center" />
                     <Footer isMobile={isMobile} />
                 </GoogleOAuthProvider>
