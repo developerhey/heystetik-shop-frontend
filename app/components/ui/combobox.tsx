@@ -71,41 +71,44 @@ export function Combobox({
                             <CommandEmpty>{emptySearchText}</CommandEmpty>
                         )}
                         <CommandGroup>
-                            {listData.map((data) => (
-                                <CommandItem
-                                    key={data.value}
-                                    value={data.value}
-                                    disabled={!data.isActive || false}
-                                    onSelect={(currentValue) => {
-                                        onValueChange(
-                                            currentValue === value
-                                                ? ""
-                                                : currentValue
-                                        );
-                                        setOpen(false);
-                                    }}
-                                >
-                                    <div className="flex flex-col">
-                                        <span>{data.label}</span>
-                                        {data.description && (
-                                            <>
-                                                <br />
-                                                <span className="text-muted-foreground">
-                                                    {data.description}
-                                                </span>
-                                            </>
-                                        )}
-                                    </div>
-                                    <Check
-                                        className={cn(
-                                            "ml-auto",
-                                            value === data.value
-                                                ? "opacity-100"
-                                                : "opacity-0"
-                                        )}
-                                    />
-                                </CommandItem>
-                            ))}
+                            {listData.map((data) => {
+                                const isActive = data.isActive ?? true;
+                                return (
+                                    <CommandItem
+                                        key={data.value}
+                                        value={data.value}
+                                        disabled={!isActive}
+                                        onSelect={(currentValue) => {
+                                            onValueChange(
+                                                currentValue === value
+                                                    ? ""
+                                                    : currentValue
+                                            );
+                                            setOpen(false);
+                                        }}
+                                    >
+                                        <div className="flex flex-col">
+                                            <span>{data.label}</span>
+                                            {data.description && (
+                                                <>
+                                                    <br />
+                                                    <span className="text-muted-foreground">
+                                                        {data.description}
+                                                    </span>
+                                                </>
+                                            )}
+                                        </div>
+                                        <Check
+                                            className={cn(
+                                                "ml-auto",
+                                                value === data.value
+                                                    ? "opacity-100"
+                                                    : "opacity-0"
+                                            )}
+                                        />
+                                    </CommandItem>
+                                );
+                            })}
                         </CommandGroup>
                     </CommandList>
                 </Command>
