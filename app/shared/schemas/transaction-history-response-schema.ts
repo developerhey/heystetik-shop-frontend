@@ -344,6 +344,14 @@ export const TransactionHistoryResponseSchema = BaseResponseSchema(
     z.array(DataTransactionHistoryResponseSchema)
 );
 
+export const TransactionHistoryDetailResponseSchema = BaseResponseDataSchema(
+    TransactionDetailSchema
+);
+
+export type TransactionHistoryDetailResponse = z.infer<
+    typeof TransactionHistoryDetailResponseSchema
+>;
+
 export type DataTransactionHistoryResponse = z.infer<
     typeof DataTransactionHistoryResponseSchema
 >;

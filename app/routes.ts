@@ -12,6 +12,10 @@ export default [
     route("cart", "routes/cart.tsx"),
     ...prefix("user", [
         route("address", "routes/user/address.tsx"),
+        route(
+            "transaction-history/:id",
+            "routes/user/transaction-history-detail.tsx"
+        ),
         route("transaction-history", "routes/user/transaction-history.tsx"),
     ]),
     ...prefix("api", [

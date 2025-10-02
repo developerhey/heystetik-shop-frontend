@@ -5,6 +5,7 @@ import { Button } from "~/components/ui/button";
 import { Package, CreditCard } from "lucide-react";
 import type { DataTransactionHistoryResponse } from "~/shared/schemas/transaction-history-response-schema";
 import { formatPriceIDR } from "~/lib/utils";
+import { useNavigate } from "react-router";
 
 const filters = [
     { text: "Semua", value: "ALL" },
@@ -54,6 +55,7 @@ export function TransactionHistoryPage({
 }: {
     transactionHistory: DataTransactionHistoryResponse[];
 }) {
+    const navigate = useNavigate()
     const [activeFilter, setActiveFilter] = useState("ALL");
 
     // Transform and filter transactions
@@ -260,7 +262,9 @@ export function TransactionHistoryPage({
                                 </div>
 
                                 <div className="flex gap-2 flex-wrap">
-                                    <Button variant="outline" size="sm">
+                                    <Button variant="outline" size="sm" onClick={() => {
+                                        navigate("/user/transaction-history/" + tx.id)
+                                    }}>
                                         Lihat Detail
                                     </Button>
                                     {tx.status === "MENUNGGU_PEMBAYARAN" && (

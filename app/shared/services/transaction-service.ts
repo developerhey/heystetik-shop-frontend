@@ -4,7 +4,9 @@ import {
     type TransactionResponse,
 } from "../schemas/transaction-response-schema";
 import {
+    TransactionHistoryDetailResponseSchema,
     TransactionHistoryResponseSchema,
+    type TransactionHistoryDetailResponse,
     type TransactionHistoryResponse,
 } from "../schemas/transaction-history-response-schema";
 
@@ -57,4 +59,16 @@ export const getTransactionHistory = (token: string) =>
             },
         },
         TransactionHistoryResponseSchema
+    );
+
+export const getTransactionHistoryById = (token: string, id: string) =>
+    request<TransactionHistoryDetailResponse>(
+        {
+            url: path + "/" + id + "/" + "product",
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        },
+        TransactionHistoryDetailResponseSchema
     );
