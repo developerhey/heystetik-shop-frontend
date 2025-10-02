@@ -8,7 +8,7 @@ import {
 } from "@vis.gl/react-google-maps";
 import { type MapComponentProps } from "./types";
 
-const API_KEY = "AIzaSyCF5fKaL91ofgj1uusPnnPJEIzA3l7DnmE";
+const API_KEY = import.meta.env.VITE_GOOGLE_MAP_API_KEY;
 
 function MapContent({
     currentLocation,
@@ -64,7 +64,6 @@ function MapContent({
 
 export function MapComponent(props: MapComponentProps) {
     if (!API_KEY) {
-        console.error("Google Maps API key is missing");
         return (
             <div className="h-full flex items-center justify-center bg-muted">
                 <p className="text-muted-foreground">

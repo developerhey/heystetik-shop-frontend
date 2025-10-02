@@ -8,7 +8,7 @@ import { AddressDetails } from "./AddressDetails";
 import { type InputMapProps } from "./types";
 import { useState } from "react";
 import { useRouteLoaderData } from "react-router";
-const API_KEY = "AIzaSyCF5fKaL91ofgj1uusPnnPJEIzA3l7DnmE";
+const API_KEY = import.meta.env.VITE_GOOGLE_MAP_API_KEY;
 
 export function InputMap({
     onAddressSelect,
