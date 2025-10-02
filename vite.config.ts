@@ -9,5 +9,5 @@ export default defineConfig({
         host: true,
         allowedHosts: true,
     },
-    plugins: [tailwindcss(), reactRouter(), tsconfigPaths(), netlifyPlugin()],
+    plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
 });

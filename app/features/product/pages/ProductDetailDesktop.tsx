@@ -132,20 +132,27 @@ export function ProductDetailDesktop({ product }: { product: ProductUI }) {
                     )}
 
                     <div className="flex items-center gap-2 mb-6 !font-bold">
-                        <InputQuantity
-                            totalStock={product.stock}
-                            qty={qty}
-                            onQtyChange={setQty}
-                        />
-                        <Button
-                            variant="outline"
-                            size={"icon"}
-                            // disabled={qty < product.minOrder}
-                            onClick={addToCart}
-                        >
-                            <ShoppingCart />
-                        </Button>
-                        {product.needConsult && (
+                        {product.stock == 0 ? (
+                            <span className="text-destructive">Stok Habis</span>
+                        ) : (
+                            <InputQuantity
+                                totalStock={product.stock}
+                                qty={qty}
+                                onQtyChange={setQty}
+                            />
+                        )}
+                        {product.stock > 0 && (
+                            <Button
+                                variant="outline"
+                                size={"icon"}
+                                onClick={() => {
+                                    addToCart(false);
+                                }}
+                            >
+                                <ShoppingCart />
+                            </Button>
+                        )}
+                        {product.needConsult && product.stock > 0 && (
                             <Button
                                 variant="default"
                                 size={"lg"}
@@ -158,14 +165,18 @@ export function ProductDetailDesktop({ product }: { product: ProductUI }) {
                                 Konsultasi Dulu
                             </Button>
                         )}
-                        <Button
-                            variant="outline"
-                            size={"lg"}
-                            className="border-primary font-bold text-primary"
-                            disabled={qty < product.minOrder}
-                        >
-                            Beli Langsung
-                        </Button>
+                        {product.stock > 0 && (
+                            <Button
+                                variant="outline"
+                                size={"lg"}
+                                className="border-primary font-bold text-primary"
+                                onClick={() => {
+                                    addToCart(true);
+                                }}
+                            >
+                                Beli Langsung
+                            </Button>
+                        )}
                     </div>
 
                     <Tabs defaultValue="detail">

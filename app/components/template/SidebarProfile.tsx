@@ -1,10 +1,11 @@
 import { X } from "lucide-react";
 import { useDialogStore } from "~/shared/stores/useDialogStore";
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar";
-import { Link } from "react-router";
+import { Link, useFetcher } from "react-router";
 
 export default function ProfileSidebar() {
     const { isOpenProfile, setOpenProfile } = useDialogStore();
+    const fetcher = useFetcher()
 
     return (
         <>
@@ -60,7 +61,9 @@ export default function ProfileSidebar() {
                         Riwayat Transaksi
                     </Link>
                     <hr />
-                    <div className="text-sm px-4 py-2 cursor-pointer hover:bg-gray-100 text-foreground">
+                    <div className="text-sm px-4 py-2 cursor-pointer hover:bg-gray-100 text-foreground" onClick={() => {
+                        fetcher.submit(null, { method: "post", action: "/api/logout" })
+                    }}>
                         Keluar
                     </div>
                 </div>

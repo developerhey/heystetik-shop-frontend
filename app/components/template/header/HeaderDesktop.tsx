@@ -2,6 +2,7 @@ import { User, ShoppingCart, Heart, Search } from "lucide-react";
 import { InputWithIcon } from "~/components/ui/input";
 import {
     Link,
+    useFetcher,
     useNavigate,
     useRouteLoaderData,
     useSearchParams,
@@ -11,6 +12,7 @@ import IconWrapper from "../IconWrapper";
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar";
 
 export default function HeaderDesktop() {
+    const fetcher = useFetcher();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const { setOpenLogin, setOpenWishlist } = useDialogStore();
@@ -122,7 +124,12 @@ export default function HeaderDesktop() {
                                 <hr />
                                 <div
                                     className="p-2 cursor-pointer hover:bg-gray-100 text-foreground"
-                                    onClick={() => {}}
+                                    onClick={() => {
+                                        fetcher.submit(null, {
+                                            method: "post",
+                                            action: "/api/logout",
+                                        });
+                                    }}
                                 >
                                     Keluar
                                 </div>

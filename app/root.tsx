@@ -6,6 +6,7 @@ import {
     Scripts,
     ScrollRestoration,
     useLoaderData,
+    useNavigation,
 } from "react-router";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import type { Route } from "./+types/root";
@@ -27,6 +28,7 @@ import { getWishlistList } from "./shared/services/wishlist-service";
 import { mapWishlistListResponseToUI } from "./shared/schemas/wishlist-mapper";
 import { getTotalCartList } from "./shared/services/cart-service";
 import { getProfile } from "./shared/services/profile-service";
+import { LoadingOverlay } from "./components/ui/loading";
 export const links: Route.LinksFunction = () => [];
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -55,6 +57,8 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
+    const navigation = useNavigation();
+    const isLoading = navigation.state === "loading";
     const data = useLoaderData<typeof loader>() ?? {};
     const { isMobile = false, user, wishlist = [] } = data;
     return (
@@ -79,6 +83,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     <ProfileSidebar />
                     <Toaster richColors position="top-center" />
                     <Footer isMobile={isMobile} />
+                    <LoadingOverlay show={isLoading}/>
                 </GoogleOAuthProvider>
                 <ScrollRestoration />
                 <Scripts />

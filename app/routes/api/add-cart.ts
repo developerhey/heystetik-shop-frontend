@@ -1,6 +1,6 @@
 import { addItemToCart } from "~/shared/services/cart-service";
 import type { Route } from "./+types/add-cart";
-import { data } from "react-router";
+import { data, redirect } from "react-router";
 import { getSession } from "~/sessions.server";
 
 export async function action({ request }: Route.ActionArgs) {
@@ -13,22 +13,28 @@ export async function action({ request }: Route.ActionArgs) {
         productId: parseInt(formData.get("productId") as string),
     };
 
+    const isRedirect = formData.get("isRedirect") === "true";
+
     try {
         await addItemToCart(accessToken, {
             qty: props.qty,
             product_id: props.productId,
         });
 
-        return data(
-            {
-                success: true,
-                message: "Berhasil menambahkan item ke keranjang",
-                data: "",
-            },
-            {
-                status: 200,
-            }
-        );
+        if (isRedirect) {
+            return redirect("/cart");
+        } else {
+            data(
+                {
+                    success: true,
+                    message: "Berhasil menambahkan item ke keranjang",
+                    data: "",
+                },
+                {
+                    status: 200,
+                }
+            );
+        }
     } catch (error: any) {
         return data(
             {

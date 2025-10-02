@@ -134,15 +134,6 @@ export function ProductDetailMobile({ product }: { product: ProductUI }) {
                     </CollapsibleTrigger>
                     <CollapsibleContent className="my-2 text-sm text-gray-500">
                         <div className="divide-gray-200 gap-y-2 flex flex-col">
-                            {/* <DetailRow
-                                label="Min. Pembelian"
-                                value={product.minOrder.toString()}
-                            />
-                            <hr />
-                            <DetailRow
-                                label="Stok"
-                                value={product.stock.toString()}
-                            /> */}
                             <hr />
                             <DetailRow
                                 label="Kategori"
@@ -225,23 +216,34 @@ export function ProductDetailMobile({ product }: { product: ProductUI }) {
                             Konsultasi Dulu
                         </Button>
                     )}
-                    <Button
-                        variant="outline"
-                        className={cn(
-                            "border-primary font-bold text-primary",
-                            !product.needConsult && "w-full"
-                        )}
-                        size={"lg"}
-                    >
-                        Beli Langsung
-                    </Button>
-                    <Button
-                        size={"icon"}
-                        variant={"outline"}
-                        onClick={addToCart}
-                    >
-                        <ShoppingCart />
-                    </Button>
+                    {product.stock > 0 && (
+                        <Button
+                            variant="outline"
+                            className={cn(
+                                "border-primary font-bold text-primary",
+                                !product.needConsult && "w-full"
+                            )}
+                            size={"lg"}
+                            onClick={() => {
+                                addToCart(true);
+                            }}
+                        >
+                            Beli Langsung
+                        </Button>
+                    )}
+                    {product.stock == 0 ? (
+                        <span className="text-destructive font-bold text-center">Stok Habis</span>
+                    ) : (
+                        <Button
+                            size={"icon"}
+                            variant={"outline"}
+                            onClick={() => {
+                                addToCart(false);
+                            }}
+                        >
+                            <ShoppingCart />
+                        </Button>
+                    )}
                 </div>
             </div>
             <LoadingOverlay show={loading || wishlistLoading} />

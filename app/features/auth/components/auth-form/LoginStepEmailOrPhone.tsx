@@ -48,7 +48,7 @@ export function LoginStepEmailOrPhone({
                 Selanjutnya
             </Button>
 
-            <div className="flex items-center my-4">
+            {/* <div className="flex items-center my-4">
                 <div className="flex-1 border-t" />
                 <span className="px-2 text-xs text-muted-foreground">
                     atau masuk dengan
@@ -68,7 +68,7 @@ export function LoginStepEmailOrPhone({
                     alt="Google"
                 />
                 Google
-            </Button>
+            </Button> */}
             <div className="text-center mt-4 text-xs text-muted-foreground">
                 Belum punya akun Heystetik?{" "}
                 <span

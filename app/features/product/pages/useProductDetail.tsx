@@ -11,10 +11,11 @@ export function useProductDetail(productId: number) {
 
     const handleQtyChange = (newQty: number) => setQty(newQty);
 
-    const handleAddToCart = () => {
+    const handleAddToCart = (isRedirect?: boolean) => {
         // if (qty < minOrder) return;
+
         fetcher.submit(
-            { productId, qty },
+            { productId, qty, isRedirect: isRedirect ?? false },
             { method: "post", action: "/api/add-to-cart" }
         );
     };
