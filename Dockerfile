@@ -20,7 +20,7 @@ ENV VITE_GOOGLE_OAUTH_CLIENT_ID=134252770117-48fcf8fqc02jabd2h2v9a0fiok39kqj0.ap
 ENV VITE_GOOGLE_MAP_API_KEY=AIzaSyCF5fKaL91ofgj1uusPnnPJEIzA3l7DnmE
 RUN npm run build
 
-EXPOSE 5173
+
 FROM node:20-alpine
 COPY ./package.json package-lock.json /app/
 COPY --from=production-dependencies-env /app/node_modules /app/node_modules
@@ -35,4 +35,5 @@ ENV VITE_GOOGLE_OAUTH_CLIENT_ID=134252770117-48fcf8fqc02jabd2h2v9a0fiok39kqj0.ap
 ENV GOOGLE_OAUTH_CLIENT_SECRET=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
 ENV VITE_GOOGLE_MAP_API_KEY=AIzaSyCF5fKaL91ofgj1uusPnnPJEIzA3l7DnmE
 ENV PORT=5173
+EXPOSE 5173
 CMD ["npm", "run", "start"]
