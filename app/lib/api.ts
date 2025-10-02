@@ -1,5 +1,4 @@
 import axios, { AxiosError, type AxiosInstance } from "axios";
-import * as AxiosLogger from "axios-logger";
 
 export interface ApiError {
     status: number;
@@ -26,16 +25,16 @@ const api: AxiosInstance = axios.create({
     headers: { "Content-Type": "application/json" },
 });
 
-api.interceptors.request.use((request) => {
-    // write down your request intercept.
-    return AxiosLogger.requestLogger(request, {
-        prefixText: "your prefix",
-        dateFormat: "HH:MM:ss",
-        headers: true,
-        params: true,
-        url: true
-    });
-});
+// api.interceptors.request.use((request) => {
+//     // write down your request intercept.
+//     return AxiosLogger.requestLogger(request, {
+//         prefixText: "your prefix",
+//         dateFormat: "HH:MM:ss",
+//         headers: true,
+//         params: true,
+//         url: true
+//     });
+// });
 
 api.interceptors.response.use(
     (response) => response,
