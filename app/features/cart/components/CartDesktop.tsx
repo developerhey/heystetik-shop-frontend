@@ -4,7 +4,8 @@ import { Trash } from "lucide-react";
 import { Textarea } from "~/components/ui/textarea";
 import { useNavigate } from "react-router";
 import { useState } from "react";
-import { set } from "zod";
+import { toast } from "sonner";
+
 export function CartDesktop({
     cart,
     qty,
@@ -16,6 +17,26 @@ export function CartDesktop({
 }: CartProps) {
     const navigate = useNavigate();
     const [inputNotes, setInputNotes] = useState(notes);
+    
+    const handleIncrement = () => {
+        if (qty >= cart.stock) {
+            toast.error(`Stok tidak mencukupi. Stok tersedia: ${cart.stock}`, { duration: 1500 });
+            return;
+        }
+        onIncrement();
+    };
+    
+    const handleDecrement = () => {
+        if (qty > 1) {
+            onDecrement();
+        }
+    };
+
+    const handleDelete = () => {
+        onDelete(); // This will now automatically remove from selection
+        toast.success("Produk dihapus dari keranjang", { duration: 1500 });
+    };
+
     return (
         <div className="flex flex-col border-b py-4">
             <div className="grid grid-cols-5 items-center text-sm">
@@ -36,6 +57,14 @@ export function CartDesktop({
                         <p className="text-gray-500 line-clamp-2">
                             {cart.title}
                         </p>
+                        <p className={`font-bold ${cart.stock > 0 ? 'text-green-600' : 'text-destructive'}`}>
+                            Stok: {cart.stock}
+                        </p>
+                        {qty > cart.stock && cart.stock > 0 && (
+                            <p className="text-destructive text-xs font-bold">
+                                Jumlah melebihi stok!
+                            </p>
+                        )}
                     </div>
                 </div>
 
@@ -57,25 +86,37 @@ export function CartDesktop({
                     )}
                 </div>
 
-                <div className="flex items-center justify-center gap-2">
-                    <Button
-                        className="h-7 w-7"
-                        size="icon"
-                        variant="outline"
-                        onClick={onDecrement}
-                    >
-                        -
-                    </Button>
-                    <span className="w-6 text-center">{qty}</span>
-                    <Button
-                        className="h-7 w-7"
-                        size="icon"
-                        variant="outline"
-                        onClick={onIncrement}
-                    >
-                        +
-                    </Button>
-                </div>
+                {cart.stock > 0 && (
+                    <div className="flex items-center justify-center gap-2">
+                        <Button
+                            className="h-7 w-7"
+                            size="icon"
+                            variant="outline"
+                            onClick={handleDecrement}
+                            disabled={qty <= 1}
+                        >
+                            -
+                        </Button>
+                        <span className={`w-6 text-center ${qty > cart.stock ? 'text-destructive font-bold' : ''}`}>
+                            {qty}
+                        </span>
+                        <Button
+                            className="h-7 w-7"
+                            size="icon"
+                            variant="outline"
+                            onClick={handleIncrement}
+                            disabled={qty >= cart.stock}
+                        >
+                            +
+                        </Button>
+                    </div>
+                )}
+
+                {cart.stock == 0 && (
+                    <p className="text-center text-destructive font-bold">
+                        Stok Habis
+                    </p>
+                )}
 
                 {/* Total + Trash */}
                 <div className="flex items-center justify-end gap-3">
@@ -85,7 +126,7 @@ export function CartDesktop({
                     <Trash
                         className="cursor-pointer text-gray-400 hover:text-red-500"
                         size={16}
-                        onClick={onDelete}
+                        onClick={handleDelete}
                     />
                 </div>
             </div>

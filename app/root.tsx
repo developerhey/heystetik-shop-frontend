@@ -13,7 +13,7 @@ import "./app.css";
 import Header from "~/components/template/header";
 import Footer from "~/components/template/footer";
 import { UAParser } from "ua-parser-js";
-import LoginDialog from "~/features/auth/components/login-form";
+import AuthForm from "~/features/auth/components/auth-form/AuthDialog";
 import { Toaster } from "sonner";
 import { getSession } from "./sessions.server";
 import {
@@ -22,9 +22,11 @@ import {
 } from "./components/template/require-login";
 import { type ApiError, isApiError } from "./lib/api";
 import WishlistSidebar from "./components/template/SidebarWishlist";
+import ProfileSidebar from "./components/template/SidebarProfile";
 import { getWishlistList } from "./shared/services/wishlist-service";
 import { mapWishlistListResponseToUI } from "./shared/schemas/wishlist-mapper";
 import { getTotalCartList } from "./shared/services/cart-service";
+import { getProfile } from "./shared/services/profile-service";
 export const links: Route.LinksFunction = () => [];
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -33,24 +35,28 @@ export async function loader({ request }: Route.LoaderArgs) {
     const user = session.get("user");
     let userAgent = request.headers.get("user-agent");
     const ua = new UAParser(userAgent || "");
-    const isMobile = ua.getDevice().type === "mobile";
+    const isMobile = ua.getDevice().type === "mobile" || false;
     if (!token) return { request, isMobile, user, wishlist: [], totalCart: 0 };
 
-    const [wishlist, cart] = await Promise.all([
+    const [wishlist, cart, profile] = await Promise.all([
         getWishlistList(token),
         getTotalCartList(token),
+        getProfile(token),
     ]);
     return {
+        isLoggedIn: !!token,
         request,
         isMobile,
         user,
         wishlist: mapWishlistListResponseToUI(wishlist),
         totalCart: cart?.data?.meta?.itemCount ?? 0,
+        profile: profile.data,
     };
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
-    const { isMobile, user, wishlist } = useLoaderData<typeof loader>();
+    const data = useLoaderData<typeof loader>() ?? {};
+    const { isMobile = false, user, wishlist = [] } = data;
     return (
         <html lang="en">
             <head>
@@ -66,10 +72,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <GoogleOAuthProvider
                     clientId={import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID}
                 >
-                    <Header isMobile={isMobile} user={user} />
+                    <Header isMobile={isMobile} />
                     {children}
-                    <LoginDialog isMobile={isMobile} />
+                    <AuthForm />
                     <WishlistSidebar wishlist={wishlist} />
+                    <ProfileSidebar />
                     <Toaster richColors position="top-center" />
                     <Footer isMobile={isMobile} />
                 </GoogleOAuthProvider>
@@ -83,12 +90,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export type ContextType = { isMobile: boolean | false };
 
 export default function App() {
-    const { isMobile } = useLoaderData<typeof loader>();
+    const data = useLoaderData<typeof loader>() ?? {};
+    const { isMobile = false } = data;
+
     return <Outlet context={{ isMobile } satisfies ContextType} />;
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-    const { isMobile } = useLoaderData<typeof loader>();
+    const data = useLoaderData<typeof loader>() ?? {};
+    const { isMobile = false } = data;
+
     let message = "Oops!";
     let details = "An unexpected error occurred.";
     let stack: string | undefined;

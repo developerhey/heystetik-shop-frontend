@@ -67,13 +67,17 @@ export const UserSchema = z.object({
     role: RoleSchema.nullish(),
 });
 
-export const LoginSchema = z.object({
-    token: z.string().nullish(),
-    user: UserSchema.nullish(),
-}).nullish()
+export const LoginSchema = z
+    .object({
+        token: z.string().nullish(),
+        user: UserSchema.nullish(),
+    })
+    .nullish();
 
 // ===== Types
-export const LoginResponseSchema = BaseResponseDataSchema(LoginSchema)
+export const LoginResponseSchema = BaseResponseDataSchema(LoginSchema);
 export type LoginResponse = z.infer<typeof LoginResponseSchema>;
+export const RegisterResponseSchema = BaseResponseDataSchema(UserSchema);
+export type RegisterResponse = z.infer<typeof RegisterResponseSchema>;
 export type User = z.infer<typeof UserSchema>;
 export type Role = z.infer<typeof RoleSchema>;

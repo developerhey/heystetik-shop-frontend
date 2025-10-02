@@ -5,10 +5,15 @@ import { useLocation } from "react-router";
 import { useDialogStore } from "~/shared/stores/useDialogStore";
 import IconWrapper from "../IconWrapper";
 import { useRouteLoaderData } from "react-router";
-export default function HeaderMobile({ user }: { user: any }) {
+export default function HeaderMobile() {
     const navigate = useNavigate();
-    const { setOpenLogin, setOpenWishlist } = useDialogStore();
-    const { wishlist, totalCart } = useRouteLoaderData("root");
+    const { setOpenLogin, setOpenWishlist, isOpenProfile, setOpenProfile } =
+        useDialogStore();
+    const {
+        wishlist = [],
+        totalCart,
+        isLoggedIn = false,
+    } = useRouteLoaderData("root") ?? {};
     const [searchParams] = useSearchParams();
     const location = useLocation();
     const pathname = location.pathname;
@@ -16,7 +21,7 @@ export default function HeaderMobile({ user }: { user: any }) {
     const iconSize = 16;
 
     return (
-        <header className="sticky top-0 w-full z-[999] bg-white border-b-2 border-primary p-4 flex flex-col">
+        <header className="sticky top-0 w-full z-50 bg-white border-b-2 border-primary p-4 flex flex-col">
             <div className="flex items-center justify-between gap-4">
                 {pathname == "/" && (
                     <Link to="/">
@@ -58,7 +63,8 @@ export default function HeaderMobile({ user }: { user: any }) {
                     </Link>
                     <IconWrapper
                         onClick={() => {
-                            setOpenLogin(true);
+                            if (!isLoggedIn) setOpenLogin(false);
+                            else setOpenProfile(true);
                         }}
                     >
                         <User size={iconSize} strokeWidth={iconStroke} />

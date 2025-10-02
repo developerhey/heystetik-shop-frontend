@@ -1,5 +1,5 @@
 import type { Route } from "./+types/login";
-import { data, redirect } from "react-router";
+import { data } from "react-router";
 import { LoginParamSchema } from "~/features/auth/schemas/login-param-schema";
 import { login } from "~/features/auth/services/auth-service";
 import { commitSession, getSession } from "~/sessions.server";
@@ -18,7 +18,6 @@ export async function action({ request }: Route.ActionArgs) {
     const { emailOrPhoneNumber, otp } = parsed.data;
 
     try {
-        // Call your authentication API
         const response = await login({ emailOrPhoneNumber, password: otp });
         // Get current session
         const session = await getSession(request.headers.get("Cookie"));
@@ -28,26 +27,21 @@ export async function action({ request }: Route.ActionArgs) {
             email: response?.data?.user?.email ?? "",
             name: response?.data?.user?.fullname ?? "",
         });
-        await commitSession(session)
-        // Determine where to redirect after login
-        // const redirectTo = formData.get("redirectTo") || "/";
-        // TODO CHANGE LATER
-        // return redirect("/", {
-        //     headers: {
-        //         "Set-Cookie": await commitSession(session),
-        //     },
-        // });
-        return data({
-            success: true,
-            message: "Login successful",
-            data: "",
-        }, {
-            status: 200,
-            headers: {
-                "Set-Cookie": await commitSession(session),
-            }
-        });
+        await commitSession(session);
 
+        return data(
+            {
+                success: true,
+                message: "Login successful",
+                data: "",
+            },
+            {
+                status: 200,
+                headers: {
+                    "Set-Cookie": await commitSession(session),
+                },
+            }
+        );
     } catch (error: any) {
         return data(
             { error: error.message || "Login failed. Please try again." },

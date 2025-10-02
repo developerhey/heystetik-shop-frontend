@@ -26,12 +26,16 @@ function DetailRow({ label, value }: { label: string; value: string }) {
 }
 
 export function ProductDetailMobile({ product }: { product: ProductUI }) {
-    const { wishlist } = useRouteLoaderData("root");
+    const { wishlist = [] } = useRouteLoaderData("root") ?? {};
     const isOnWishlist = wishlist.some(
         (item: ProductUI) => item.id === product.id
     );
     const { addToCart, loading } = useProductDetail(product.id);
-    const { loading: wishlistLoading, handleAddToWishlist, handleRemoveFromWishlist } = useWishlist();
+    const {
+        loading: wishlistLoading,
+        handleAddToWishlist,
+        handleRemoveFromWishlist,
+    } = useWishlist();
     const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
         Autoplay({ delay: 3000 }),
     ]);

@@ -5,6 +5,14 @@ import { type CartProps } from ".";
 import { Textarea } from "~/components/ui/textarea";
 import { useNavigate } from "react-router";
 import { useState } from "react";
+import { Checkbox } from "~/components/ui/checkbox";
+import { toast } from "sonner";
+
+interface CartMobileProps extends CartProps {
+    isSelected?: boolean;
+    onToggleSelection?: () => void;
+}
+
 export function CartMobile({
     cart,
     qty,
@@ -13,72 +21,153 @@ export function CartMobile({
     onDelete,
     onIncrement,
     onUpdateNotes,
-}: CartProps) {
+    isSelected = false,
+    onToggleSelection,
+}: CartMobileProps) {
     const navigate = useNavigate();
     const [inputNotes, setInputNotes] = useState(notes);
+
+    const handleIncrement = () => {
+        if (qty >= cart.stock) {
+            toast.error(`Stok tidak mencukupi. Stok tersedia: ${cart.stock}`, {
+                duration: 1500,
+            });
+            return;
+        }
+        onIncrement();
+    };
+
+    const handleDecrement = () => {
+        if (qty > 1) {
+            onDecrement();
+        }
+    };
+
+    const handleDelete = () => {
+        onDelete();
+        toast.success("Produk dihapus dari keranjang", { duration: 1500 });
+    };
+
+    const handleToggleSelection = () => {
+        if (cart.stock === 0) {
+            toast.error("Stok tidak mencukupi", { duration: 1500 });
+        } else if (cart.stock < qty) {
+            toast.error("Stok tidak mencukupi", { duration: 1500 });
+        } else {
+            onToggleSelection?.();
+        }
+    };
+
     return (
         <Card className="shadow-none rounded-md">
-            <CardContent className="space-y-2">
-                <div className="flex gap-3 cursor-pointer" onClick={() => navigate(`/product/${cart.id}`)}>
-                    <img
-                        src={cart.images[0]?.path || ""}
-                        alt={cart.title}
-                        className="w-16 h-16 rounded-md object-cover"
-                    />
-                    <div className="flex-1">
-                        <p className="font-semibold">{cart.brand}</p>
-                        <p className="text-sm text-muted-foreground">
-                            {cart.title}
-                        </p>
-                        {/* Harga */}
-
-                        {cart.formattedPriceWithDiscount ? (
-                            <div className="flex flex-col ">
-                                <p className="text-xs mt-1 text-gray-400 line-through">
-                                    {cart.formattedPrice}
-                                </p>
-                                <p className="font-semibold mt-1 text-red-600">
-                                    {cart.formattedPriceWithDiscount}
-                                </p>
-                            </div>
-                        ) : (
-                            <p className="font-semibold mt-1">
-                                {cart.formattedPrice}
-                            </p>
-                        )}
-                    </div>
-                </div>
-
-                {/* Counter & Total */}
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={onDecrement}
-                        >
-                            -
-                        </Button>
-                        <span>{qty}</span>
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={onIncrement}
-                        >
-                            +
-                        </Button>
-                    </div>
-                    <div className="flex flex-row gap-x-2 items-center">
-                        <p className="font-semibold">
-                            {cart.totalFormattedPrice}
-                        </p>
-                        <Trash
-                            className="cursor-pointer text-gray-400 hover:text-red-500"
-                            size={16}
-                            onClick={onDelete}
+            <CardContent className="space-y-3 pt-4">
+                {/* First row: Checkbox and Product Info */}
+                <div className="flex gap-3">
+                    {/* Checkbox */}
+                    <div className="flex items-start">
+                        <Checkbox
+                            id={`cart-mobile-${cart.cartId}`}
+                            checked={isSelected}
+                            onCheckedChange={handleToggleSelection}
+                            aria-label={`Pilih ${cart.title}`}
                         />
                     </div>
+
+                    {/* Product Info - Clickable */}
+                    <div
+                        className="flex gap-3 cursor-pointer flex-1"
+                        onClick={() => navigate(`/product/${cart.id}`)}
+                    >
+                        <img
+                            src={cart.images[0]?.path || ""}
+                            alt={cart.title}
+                            className="w-16 h-16 rounded-md object-cover border"
+                        />
+                        <div className="flex-1">
+                            <p className="font-semibold text-sm">
+                                {cart.brand}
+                            </p>
+                            <p className="text-sm text-muted-foreground line-clamp-2">
+                                {cart.title}
+                            </p>
+                            {/* Stock Info */}
+                            <p
+                                className={`text-xs font-bold ${cart.stock > 0 ? "text-green-600" : "text-destructive"}`}
+                            >
+                                Stok: {cart.stock}
+                            </p>
+                            {qty > cart.stock && cart.stock > 0 && (
+                                <p className="text-destructive text-xs font-bold">
+                                    Jumlah melebihi stok!
+                                </p>
+                            )}
+                        </div>
+                    </div>
                 </div>
+
+                {/* Price */}
+                <div className="flex justify-between items-center">
+                    {cart.formattedPriceWithDiscount ? (
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-400 line-through">
+                                {cart.formattedPrice}
+                            </span>
+                            <span className="font-semibold text-red-600 text-sm">
+                                {cart.formattedPriceWithDiscount}
+                            </span>
+                        </div>
+                    ) : (
+                        <span className="font-semibold text-sm">
+                            {cart.formattedPrice}
+                        </span>
+                    )}
+                    <span className="font-semibold text-gray-800 text-sm">
+                        {cart.totalFormattedPrice}
+                    </span>
+                </div>
+
+                {/* Counter & Delete */}
+                <div className="flex items-center justify-between">
+                    {cart.stock > 0 ? (
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={handleDecrement}
+                                disabled={qty <= 1}
+                            >
+                                -
+                            </Button>
+                            <span
+                                className={`w-6 text-center text-sm ${qty > cart.stock ? "text-destructive font-bold" : ""}`}
+                            >
+                                {qty}
+                            </span>
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={handleIncrement}
+                                disabled={qty >= cart.stock}
+                            >
+                                +
+                            </Button>
+                        </div>
+                    ) : (
+                        <p className="text-destructive text-sm font-bold">
+                            Stok Habis
+                        </p>
+                    )}
+
+                    <Trash
+                        className="cursor-pointer text-gray-400 hover:text-red-500"
+                        size={18}
+                        onClick={handleDelete}
+                    />
+                </div>
+
+                {/* Notes */}
                 <Textarea
                     value={inputNotes}
                     onChange={(e) => {
@@ -86,6 +175,7 @@ export function CartMobile({
                         onUpdateNotes(e.target.value);
                     }}
                     placeholder="Catatan"
+                    className="text-sm"
                 />
             </CardContent>
         </Card>

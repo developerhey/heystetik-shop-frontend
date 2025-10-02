@@ -8,16 +8,23 @@ import {
 } from "react-router";
 import { useDialogStore } from "~/shared/stores/useDialogStore";
 import IconWrapper from "../IconWrapper";
-export default function HeaderDesktop({ user }: { user: any }) {
+import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar";
+
+export default function HeaderDesktop() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const { setOpenLogin, setOpenWishlist } = useDialogStore();
-    const { wishlist, totalCart } = useRouteLoaderData("root");
+    const {
+        wishlist = [],
+        totalCart,
+        isLoggedIn,
+        profile,
+    } = useRouteLoaderData("root") ?? {};
     const iconStroke = 1.5;
     const iconSize = 25;
 
     return (
-        <header className="sticky top-0 w-full z-[999] bg-white border-b-2 border-primary px-16 py-4 flex items-center justify-between gap-4">
+        <header className="sticky top-0 w-full z-50 bg-white border-b-2 border-primary px-16 py-4 flex items-center justify-between gap-4">
             <Link to="/">
                 <img
                     src="/images/logo.svg"
@@ -65,11 +72,56 @@ export default function HeaderDesktop({ user }: { user: any }) {
                 </Link>
                 <IconWrapper
                     onClick={() => {
-                        setOpenLogin(true);
+                        if (!isLoggedIn) setOpenLogin(true);
                     }}
+                    className="group flex"
                 >
                     <User size={iconSize} strokeWidth={iconStroke} />
-                    <p className="ml-2">{user ? user.name : "LOGIN"}</p>
+                    <p className="ml-2">{isLoggedIn ? "Test" : "LOGIN"}</p>
+
+                    {/* Dropdown on hover */}
+                    <div className="absolute right-0 top-10 py-2  hidden w-auto min-w-[13.438rem] group-hover:block z-40">
+                        <div className="flex flex-col rounded-md border border-border-subtle bg-white shadow-md mt-sm">
+                            <div className="flex flex-row p-2 cursor-pointer hover:bg-gray-100 gap-x-2 items-center">
+                                <Avatar>
+                                    <AvatarImage
+                                        src={
+                                            profile?.media_user_profile_picture ??
+                                            ""
+                                        }
+                                    />
+                                    <AvatarFallback>
+                                        {profile.fullname[0]}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div className="flex flex-col">
+                                    <span className="text-semibold">
+                                        {profile.fullname}
+                                    </span>
+                                    <span className="text-sm text-muted-foreground">
+                                        {profile.no_phone}
+                                    </span>
+                                </div>
+                            </div>
+                            <hr />
+                            <Link
+                                to={"/user/address"}
+                                className="p-2 cursor-pointer hover:bg-gray-100 text-foreground"
+                            >
+                                Daftar Alamat
+                            </Link>
+                            <Link
+                                to={"/user/transaction-history"}
+                                className="p-2 cursor-pointer hover:bg-gray-100 text-foreground"
+                            >
+                                Riwayat Transaksi
+                            </Link>
+                            <hr />
+                            <div className="p-2 cursor-pointer hover:bg-gray-100 text-foreground">
+                                Keluar
+                            </div>
+                        </div>
+                    </div>
                 </IconWrapper>
             </div>
         </header>

@@ -1,12 +1,23 @@
+import { cn } from "~/lib/utils";
+
 interface IconWrapperProps {
     children: React.ReactNode;
     onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
     badgeCount?: number;
+    className?: string;
 }
 
-const IconWrapper = ({ children, onClick, badgeCount = 0 }: IconWrapperProps) => (
+const IconWrapper = ({
+    children,
+    onClick,
+    badgeCount = 0,
+    className,
+}: IconWrapperProps) => (
     <div
-        className="relative p-2 rounded-xl hover:bg-gray-100 cursor-pointer transition flex"
+        className={cn(
+            "relative p-2 rounded-xl hover:bg-gray-100 cursor-pointer transition flex",
+            className
+        )}
         onClick={onClick}
     >
         {children}

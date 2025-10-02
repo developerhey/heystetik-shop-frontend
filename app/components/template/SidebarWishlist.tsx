@@ -1,7 +1,6 @@
 import { X } from "lucide-react";
 import { useDialogStore } from "~/shared/stores/useDialogStore";
 import type { ProductListUI } from "~/shared/schemas/product-ui-schema";
-import { use } from "react";
 import { useWishlist } from "~/shared/hooks/useWishlist";
 import { LoadingOverlay } from "../ui/loading";
 

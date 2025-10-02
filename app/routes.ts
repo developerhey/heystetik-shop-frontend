@@ -10,6 +10,10 @@ export default [
     route("search", "routes/search.tsx"),
     route("product/:id", "routes/product-detail.tsx"),
     route("cart", "routes/cart.tsx"),
+    ...prefix("user", [
+        route("address", "routes/user/address.tsx"),
+        route("transaction-history", "routes/user/transaction-history.tsx"),
+    ]),
     ...prefix("api", [
         route("login", "routes/api/login.ts"),
         route("add-to-cart", "routes/api/add-cart.ts"),
@@ -17,5 +21,16 @@ export default [
         route("delete-from-cart", "routes/api/delete-cart.ts"),
         route("delete-from-wishlist", "routes/api/delete-wishlist.ts"),
         route("add-to-wishlist", "routes/api/add-wishlist.ts"),
+        route("register-phone", "routes/api/register-phone.ts"),
+        route("register-phone-otp", "routes/api/register-phone-otp.ts"),
+        route("register-email-otp", "routes/api/register-email-otp.ts"),
+        route("register-email", "routes/api/register-email.ts"),
+        route("register-personal-info", "routes/api/register-personal-info.ts"),
+        route("add-address", "routes/api/add-address.ts"),
+        route("update-address", "routes/api/update-address.ts"),
+        route("delete-address", "routes/api/delete-address.ts"),
+        route("set-main-address", "routes/api/set-main-address.ts"),
+        route("order-product", "routes/api/order-product.ts"),
     ]),
+    // route("*", "routes/404.tsx"),
 ] satisfies RouteConfig;

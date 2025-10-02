@@ -1,4 +1,3 @@
-import { Input } from "~/components/ui/input"
 import { type FooterLinkProps } from "."
 
 
@@ -10,7 +9,7 @@ export default function FooterDesktop() {
     }
     return (
         <footer className="w-full bg-black px-[11.25rem] py-[4.063rem] flex flex-col justify-between gap-8">
-            <p className="text-white text-[1.125rem] font-bold">Get interesting updates and special offer</p>
+            {/* <p className="text-white text-[1.125rem] font-bold">Get interesting updates and special offer</p> */}
             {/* ToDo create input to subscribe email & sosmed */}
             {/* <Input className="bg-white" placeholder="Enter your email here"/> */}
             <div className="flex flex-row items-center justify-between">

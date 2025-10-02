@@ -59,8 +59,12 @@ function InputQuantity({
 
 export function ProductDetailDesktop({ product }: { product: ProductUI }) {
     const { qty, setQty, addToCart, loading } = useProductDetail(product.id);
-    const { loading: wishlistLoading, handleAddToWishlist, handleRemoveFromWishlist } = useWishlist();
-    const { wishlist } = useRouteLoaderData("root");
+    const {
+        loading: wishlistLoading,
+        handleAddToWishlist,
+        handleRemoveFromWishlist,
+    } = useWishlist();
+    const { wishlist = [] } = useRouteLoaderData("root") ?? {};
     const isOnWishlist = wishlist.some(
         (item: ProductUI) => item.id === product.id
     );

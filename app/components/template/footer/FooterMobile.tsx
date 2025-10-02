@@ -10,7 +10,7 @@ export default function FooterMobile() {
     }
     return (
         <footer className="w-full bg-black p-4 flex flex-col py-16">
-            <p className="text-white text-[1rem] font-medium">Get interesting updates and special offer</p>
+            {/* <p className="text-white text-[1rem] font-medium">Get interesting updates and special offer</p> */}
             {/* ToDo create input to subscribe email & sosmed */}
             {/* <Input className="bg-white" placeholder="Enter your email here"/> */}
             <div className="flex flex-col mt-16 gap-y-1">
