@@ -9,6 +9,7 @@ import { RegisterStepPhoneOtp } from "./RegisterStepPhoneOtp";
 import { RegisterStepEmail } from "./RegisterStepEmail";
 import { RegisterStepEmailOtp } from "./RegisterStepEmailOtp";
 import { RegisterStepPersonalInfo } from "./RegisterStepPersonalInfo";
+import { ForgotPasswordStepEmail } from "./ForgotPasswordStepEmail";
 export default function AuthForm() {
     const { isOpenLogin, setOpenLogin } = useDialogStore();
     const {
@@ -22,6 +23,7 @@ export default function AuthForm() {
         handleLogin,
         handleGoogleLogin,
         handleRegisterStep,
+        handleForgotPassword,
     } = useAuth();
 
     return (
@@ -43,8 +45,22 @@ export default function AuthForm() {
                         onRegisterClick={() => setStep("register-phone")}
                     />
                 )}
+                {step === "forgot-password" && (
+                    <ForgotPasswordStepEmail
+                        loading={loading}
+                        onBackClick={() => setStep("emailOrPhoneNumber")}
+                        value={values.emailForgotPassword as string}
+                        error={errors.emailForgotPassword}
+                        onChange={(e) => {
+                            setValue("emailForgotPassword", e.target.value);
+                            validateField("emailForgotPassword");
+                        }}
+                        onNextClick={handleForgotPassword}
+                    />
+                )}
                 {step === "otp" && (
                     <LoginStepOtp
+                        onForgotPassword={() => setStep("forgot-password")}
                         onCompleteOtp={handleLogin}
                         onOtpChange={(newValue) => setValue("otp", newValue)}
                         onBackClick={() => setStep("emailOrPhoneNumber")}

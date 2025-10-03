@@ -20,6 +20,7 @@ export default [
     ]),
     ...prefix("api", [
         route("login", "routes/api/login.ts"),
+        route("forgot-password", "routes/api/forgot-password.ts"),
         route("logout", "routes/api/logout.ts"),
         route("add-to-cart", "routes/api/add-cart.ts"),
         route("update-cart", "routes/api/update-cart.ts"),

@@ -14,10 +14,12 @@ export function LoginStepOtp({
     onCompleteOtp,
     onOtpChange,
     loading,
+    onForgotPassword,
 }: {
     onBackClick: () => void;
     onCompleteOtp: () => void;
     onOtpChange: (newValue: string) => void;
+    onForgotPassword: () => void;
     loading: boolean;
 }) {
     return (
@@ -49,7 +51,7 @@ export function LoginStepOtp({
                         <InputOTPSlot index={5} />
                     </InputOTPGroup>
                 </InputOTP>
-                <Button variant={"link"} className="mt-6" disabled={loading}>
+                <Button variant={"link"} className="mt-6" disabled={loading} onClick={onForgotPassword}>
                     Lupa kata sandi?
                 </Button>
             </div>

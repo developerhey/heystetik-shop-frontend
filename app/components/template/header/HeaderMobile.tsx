@@ -63,8 +63,7 @@ export default function HeaderMobile() {
                     </Link>
                     <IconWrapper
                         onClick={() => {
-                            if (!isLoggedIn) setOpenLogin(false);
-                            else setOpenProfile(true);
+                            if (!isLoggedIn) setOpenLogin(true);
                         }}
                     >
                         <User size={iconSize} strokeWidth={iconStroke} />

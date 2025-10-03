@@ -96,15 +96,15 @@ export default function HeaderDesktop() {
                                             }
                                         />
                                         <AvatarFallback>
-                                            {profile.fullname[0]}
+                                            {profile?.fullname[0]}
                                         </AvatarFallback>
                                     </Avatar>
                                     <div className="flex flex-col">
                                         <span className="text-semibold">
-                                            {profile.fullname}
+                                            {profile?.fullname}
                                         </span>
                                         <span className="text-sm text-muted-foreground">
-                                            {profile.no_phone}
+                                            {profile?.no_phone}
                                         </span>
                                     </div>
                                 </div>

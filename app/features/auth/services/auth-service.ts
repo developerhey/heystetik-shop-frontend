@@ -10,6 +10,15 @@ const path = "auth/";
 const verificationPath = "verification/";
 const registrationPath = "registration/step/";
 
+export const forgotPassword = ({ email }: { email: string }) =>
+    request<any>({
+        url: path + "forgot-password",
+        method: "POST",
+        data: {
+            email: email,
+        },
+    });
+
 export const login = ({
     emailOrPhoneNumber,
     password,

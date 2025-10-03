@@ -12,16 +12,19 @@ import {
     type RegisterStepPhoneField,
     type RegisterStepEmailField,
     type RegisterStepEmailPersonalInfo,
+    ForgotPasswordParam,
 } from "~/features/auth/schemas/login-param-schema";
 import { useDialogStore } from "~/shared/stores/useDialogStore";
 import { useRevalidator } from "react-router";
+import { ForgotPasswordStepEmail } from "./ForgotPasswordStepEmail";
 
 // Union type for all possible fields across all steps
 type AllFields =
     | LoginField
     | RegisterStepPhoneField
     | RegisterStepEmailField
-    | RegisterStepEmailPersonalInfo;
+    | RegisterStepEmailPersonalInfo
+    | "emailForgotPassword";
 
 // Extended state interface to handle all auth flows
 interface AuthState {
@@ -40,6 +43,7 @@ interface AuthState {
         city?: string;
         pin?: string;
         avatarUrl?: string;
+        emailForgotPassword?: string;
     };
     errors: Partial<Record<AllFields, string>>;
     loading: boolean;
@@ -55,6 +59,7 @@ type UseAuthReturn = AuthState & {
     handleLogin: () => void;
     handleGoogleLogin: () => void;
     handleRegisterStep: (isResendOtp?: boolean) => void;
+    handleForgotPassword: () => void;
 };
 
 const initialState: AuthState = {
@@ -82,6 +87,7 @@ export const useAuth = (): UseAuthReturn => {
         const stepTransitions: Record<AuthStep, AuthStep> = {
             emailOrPhoneNumber: "otp",
             otp: "emailOrPhoneNumber",
+            "forgot-password": "emailOrPhoneNumber",
             "register-phone": "register-phone-otp",
             "register-phone-otp": "register-email",
             "register-email": "register-email-otp",
@@ -172,6 +178,8 @@ export const useAuth = (): UseAuthReturn => {
 
     const getSchemaForStep = useCallback((step: AuthStep) => {
         switch (step) {
+            case "forgot-password":
+                return ForgotPasswordParam;
             case "emailOrPhoneNumber":
             case "otp":
                 return LoginParamSchema;
@@ -228,6 +236,19 @@ export const useAuth = (): UseAuthReturn => {
         },
         [state.step, state.values, setError, getSchemaForStep]
     );
+
+    const handleForgotPassword = useCallback(() => {
+        const isEmailValid = validateField("emailForgotPassword");
+        if (!isEmailValid) return;
+
+        const formData = new FormData();
+        formData.append("email", state.values.emailForgotPassword || "");
+
+        fetcher.submit(formData, {
+            method: "post",
+            action: "/api/forgot-password",
+        });
+    }, [state.values, state.step, validateField, fetcher, setStep]);
 
     const handleLogin = useCallback(() => {
         // Handle login flow steps
@@ -434,5 +455,6 @@ export const useAuth = (): UseAuthReturn => {
         handleLogin,
         handleGoogleLogin,
         handleRegisterStep,
+        handleForgotPassword,
     };
 };

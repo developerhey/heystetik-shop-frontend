@@ -2,10 +2,11 @@ import { X } from "lucide-react";
 import { useDialogStore } from "~/shared/stores/useDialogStore";
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar";
 import { Link, useFetcher } from "react-router";
-
+import { useRouteLoaderData } from "react-router";
 export default function ProfileSidebar() {
+    const { profile } = useRouteLoaderData("root") ?? {};
     const { isOpenProfile, setOpenProfile } = useDialogStore();
-    const fetcher = useFetcher()
+    const fetcher = useFetcher();
 
     return (
         <>
@@ -29,13 +30,17 @@ export default function ProfileSidebar() {
                         className="flex flex-row cursor-pointer hover:bg-gray-100 gap-x-2 items-center"
                     >
                         <Avatar>
-                            <AvatarImage src="" />
-                            <AvatarFallback>CN</AvatarFallback>
+                            <AvatarImage
+                                src={profile?.media_user_profile_picture ?? ""}
+                            />
+                            <AvatarFallback>
+                                {profile?.fullname[0]}
+                            </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
                             <span className="text-sm">Test</span>
                             <span className="text-xs text-muted-foreground">
-                                +628980123
+                                {profile?.fullname}
                             </span>
                         </div>
                     </Link>
@@ -61,9 +66,15 @@ export default function ProfileSidebar() {
                         Riwayat Transaksi
                     </Link>
                     <hr />
-                    <div className="text-sm px-4 py-2 cursor-pointer hover:bg-gray-100 text-foreground" onClick={() => {
-                        fetcher.submit(null, { method: "post", action: "/api/logout" })
-                    }}>
+                    <div
+                        className="text-sm px-4 py-2 cursor-pointer hover:bg-gray-100 text-foreground"
+                        onClick={() => {
+                            fetcher.submit(null, {
+                                method: "post",
+                                action: "/api/logout",
+                            });
+                        }}
+                    >
                         Keluar
                     </div>
                 </div>

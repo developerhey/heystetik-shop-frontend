@@ -42,6 +42,14 @@ export const RegisterStepPersonalInfoParam = z.strictObject({
     avatarUrl: z.string().optional(), // Optional avatar URL
 });
 
+export const ForgotPasswordParam = z.strictObject({
+    emailForgotPassword: z
+        .string()
+        .refine((val) => z.string().email().safeParse(val).success, {
+            message: "Must be a valid email",
+        }),
+});
+
 export type LoginParam = z.infer<typeof LoginParamSchema>;
 export type AuthStep =
     | "emailOrPhoneNumber"
@@ -50,7 +58,9 @@ export type AuthStep =
     | "register-phone-otp"
     | "register-email"
     | "register-email-otp"
+    | "forgot-password"
     | "register-personal-info";
+export type ForgotPasswordField = "emailForgotPassword";
 export type LoginField = "emailOrPhoneNumber" | "otp";
 export type RegisterStepPhoneField = "phoneNumber" | "otpPhone";
 export type RegisterStepEmailField = "email" | "otpEmail";
