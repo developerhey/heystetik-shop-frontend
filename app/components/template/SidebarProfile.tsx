@@ -38,9 +38,9 @@ export default function ProfileSidebar() {
                             </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
-                            <span className="text-sm">Test</span>
+                            <span className="text-sm">{profile?.fullname}</span>
                             <span className="text-xs text-muted-foreground">
-                                {profile?.fullname}
+                                {profile?.no_phone}
                             </span>
                         </div>
                     </Link>
