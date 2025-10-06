@@ -10,12 +10,12 @@ export async function loader({ request, params }: Route.LoaderArgs) {
         accessToken,
         params.id
     );
-    console.log(transactionHistory)
+
     return {
         detail: transactionHistory?.data ?? {},
     };
 }
 
-export default function Cart({ loaderData }: Route.ComponentProps) {
+export default function TransactionHistoryDetail({ loaderData }: Route.ComponentProps) {
     return <TransactionHistoryDetailPage detail={loaderData.detail} />;
 }

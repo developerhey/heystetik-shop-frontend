@@ -1,5 +1,5 @@
 import type { Route } from "./+types/order-product";
-import { data } from "react-router";
+import { data, redirect } from "react-router";
 import { orderProduct } from "~/shared/services/transaction-service";
 import { getSession } from "~/sessions.server";
 
@@ -38,16 +38,9 @@ export async function action({ request }: Route.ActionArgs) {
 
         const result = await orderProduct(accessToken, orderData);
 
-        return data(
-            {
-                success: true,
-                message: "Berhasil membuat order",
-                transaction: result,
-            },
-            { status: 200 }
-        );
+        return redirect(`/user/payment/${result.data?.transaction?.id}`);
     } catch (error: any) {
-        console.log(error)
+        console.log(error);
         return data(
             {
                 error: error.message || "Gagal beli, silahkan coba lagi",

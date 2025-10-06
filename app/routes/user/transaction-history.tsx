@@ -12,6 +12,6 @@ export async function loader({ request }: Route.LoaderArgs) {
     };
 }
 
-export default function Cart({ loaderData }: Route.ComponentProps) {
+export default function TransactionHistory({ loaderData }: Route.ComponentProps) {
     return <TransactionHistoryPage transactionHistory={loaderData.transactionHistory} />;
 }

@@ -38,6 +38,7 @@
     "isbot": "^5.1.27",
     "lucide-react": "^0.536.0",
     "npm": "^11.5.2",
+    "qrcode.react": "^4.2.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-infinite-scroll-component": "^6.1.0",

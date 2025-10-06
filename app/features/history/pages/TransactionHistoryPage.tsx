@@ -270,6 +270,9 @@ export function TransactionHistoryPage({
                                     {tx.status === "MENUNGGU_PEMBAYARAN" && (
                                         <Button
                                             size="sm"
+                                            onClick={() => {
+                                                navigate("/user/payment/" + tx.id)
+                                            }}
                                         >
                                             Bayar Sekarang
                                         </Button>

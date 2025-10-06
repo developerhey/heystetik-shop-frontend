@@ -17,6 +17,7 @@ export default [
             "routes/user/transaction-history-detail.tsx"
         ),
         route("transaction-history", "routes/user/transaction-history.tsx"),
+        route("payment/:id", "routes/user/transaction-history-payment.tsx"),
     ]),
     ...prefix("api", [
         route("login", "routes/api/login.ts"),

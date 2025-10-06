@@ -1,51 +1,127 @@
-import { useState } from "react";
 import { Card } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import {
-    Copy,
     Clock,
     MapPin,
     Store,
     Truck,
     CreditCard,
-    Smartphone,
-    CheckCircle2,
+    ArrowLeft,
 } from "lucide-react";
 import { formatPriceIDR } from "~/lib/utils";
-import { toast } from "sonner";
+import { Link } from "react-router";
 import type { TransactionDetail } from "~/shared/schemas/transaction-history-response-schema";
 
-export function TransactionHistoryDetailPage({
-    detail,
-}: {
+interface TransactionHistoryDetailPageProps {
     detail: TransactionDetail;
-}) {
-    console.log(detail);
-    const [showPaymentConfirm, setShowPaymentConfirm] = useState(false);
+}
 
-    // Safe data access with null checks
-    const transactionStatus = detail?.status || "";
-    const paymentExpiryTime = detail?.payment_expiry_time;
-    const vaNumber = detail?.va_number;
-    const paymentMethod = detail?.payment_method;
-    const invoiceNumber = detail?.invoice_number;
-    const transactionItems = detail?.transaction_product_items || [];
-    const shippingProduct = detail?.shipping_product;
+// Ringkasan Belanja Component
+function OrderSummary({ detail }: { detail: TransactionDetail }) {
     const totalPrice = detail?.total_price || 0;
     const deliveryFee = detail?.delivery_fee || 0;
     const transactionFee = detail?.transaction_fee || 0;
+    const tax = detail?.tax || 0;
+    const totalDiscount = detail?.total_discount || 0;
     const totalPaid = detail?.total_paid || 0;
+    const transactionItems = detail?.transaction_product_items || [];
 
-    const copyToClipboard = (text: string) => {
-        if (!text) {
-            toast.error("Tidak ada teks untuk disalin");
-            return;
-        }
-        navigator.clipboard.writeText(text);
-        toast.success("Berhasil disalin");
-    };
+    return (
+        <Card className="w-full shadow-none gap-y-4 rounded-md">
+            <div className="p-6">
+                <h2 className="font-semibold text-lg mb-4">
+                    Ringkasan Belanja
+                    {transactionItems.length > 0 && (
+                        <span className="text-sm font-normal text-green-600 ml-2">
+                            ({transactionItems.length} item)
+                        </span>
+                    )}
+                </h2>
+
+                <div className="flex flex-col gap-y-3">
+                    {/* Subtotal */}
+                    <div className="flex justify-between text-sm text-gray-600">
+                        <span>Total Harga Produk</span>
+                        <span>{formatPriceIDR(totalPrice)}</span>
+                    </div>
+
+                    {/* Delivery Fee */}
+                    {deliveryFee > 0 && (
+                        <div className="flex justify-between text-sm text-gray-600">
+                            <span>Biaya Pengiriman</span>
+                            <span>{formatPriceIDR(deliveryFee)}</span>
+                        </div>
+                    )}
+
+                    {/* Transaction Fee */}
+                    {transactionFee > 0 && (
+                        <div className="flex justify-between text-sm text-gray-600">
+                            <span>Biaya Transaksi</span>
+                            <span>{formatPriceIDR(transactionFee)}</span>
+                        </div>
+                    )}
+
+                    {/* Tax */}
+                    {tax > 0 && (
+                        <div className="flex justify-between text-sm text-gray-600">
+                            <span>Pajak</span>
+                            <span>{formatPriceIDR(tax)}</span>
+                        </div>
+                    )}
+
+                    {/* Discount */}
+                    {totalDiscount > 0 && (
+                        <div className="flex justify-between text-sm text-destructive">
+                            <span>Diskon</span>
+                            <span>-{formatPriceIDR(totalDiscount)}</span>
+                        </div>
+                    )}
+
+                    <Separator />
+
+                    {/* Total */}
+                    <div className="flex justify-between font-semibold text-base">
+                        <span>Total</span>
+                        <span>{formatPriceIDR(totalPaid)}</span>
+                    </div>
+                </div>
+
+                {/* Payment Method */}
+                {detail?.payment_method && (
+                    <>
+                        <Separator className="my-4" />
+                        <div>
+                            <h3 className="font-semibold mb-2 text-sm">
+                                Metode Pembayaran
+                            </h3>
+                            <div className="flex items-center gap-2">
+                                <CreditCard className="w-4 h-4 text-gray-400" />
+                                <span className="text-sm">
+                                    {detail.payment_method.method ===
+                                    "VIRTUAL_ACCOUNT"
+                                        ? `Virtual Account ${detail.payment_method.type}`
+                                        : detail.payment_method.type}
+                                </span>
+                            </div>
+                        </div>
+                    </>
+                )}
+            </div>
+        </Card>
+    );
+}
+
+export function TransactionHistoryDetailPage({
+    detail,
+}: TransactionHistoryDetailPageProps) {
+    // Safe data access with null checks
+    const transactionStatus = detail?.status || "";
+    const paymentExpiryTime = detail?.payment_expiry_time;
+    const invoiceNumber = detail?.invoice_number;
+    const transactionItems = detail?.transaction_product_items || [];
+    const shippingProduct = detail?.shipping_product;
 
     const getStatusBadgeColor = (status: string) => {
         switch (status) {
@@ -74,11 +150,6 @@ export function TransactionHistoryDetailPage({
         return statusMap[status] || status;
     };
 
-    const handlePaymentConfirm = () => {
-        setShowPaymentConfirm(true);
-        toast.success("Konfirmasi pembayaran berhasil dikirim");
-    };
-
     // Check if data is available
     if (!detail) {
         return (
@@ -97,10 +168,26 @@ export function TransactionHistoryDetailPage({
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
                 {/* Header */}
                 <div className="mb-6">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-                        Detail Transaksi
-                    </h1>
-                    <p className="text-gray-600 mt-2">{invoiceNumber}</p>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                                Detail Transaksi
+                            </h1>
+                            <p className="text-gray-600 mt-2">
+                                {invoiceNumber}
+                            </p>
+                        </div>
+                        {transactionStatus === "MENUNGGU_PEMBAYARAN" && (
+                            <Link
+                                to={`/user/payment/${detail.id}`}
+                                className="mt-4 sm:mt-0"
+                            >
+                                <Button>
+                                    Lanjutkan Pembayaran
+                                </Button>
+                            </Link>
+                        )}
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -232,7 +319,9 @@ export function TransactionHistoryDetailPage({
                                             ?.name || "Tidak tersedia"}
                                     </p>
                                     <p className="text-sm text-gray-600">
-                                        {formatPriceIDR(deliveryFee)}
+                                        {formatPriceIDR(
+                                            detail?.delivery_fee || 0
+                                        )}
                                     </p>
                                 </div>
                             </div>
@@ -241,136 +330,8 @@ export function TransactionHistoryDetailPage({
 
                     {/* Sidebar - 1/3 width on desktop */}
                     <div className="space-y-6">
-                        {/* Payment Information */}
-                        <Card className="p-6">
-                            <h2 className="text-lg font-semibold mb-4">
-                                Pembayaran
-                            </h2>
-
-                            {/* Virtual Account */}
-                            {paymentMethod?.method === "VIRTUAL_ACCOUNT" && (
-                                <div className="space-y-4">
-                                    <div className="bg-blue-50 p-4 rounded-lg">
-                                        <div className="flex items-center gap-2 mb-3">
-                                            <CreditCard className="w-5 h-5 text-blue-600" />
-                                            <span className="font-semibold">
-                                                Virtual Account
-                                            </span>
-                                        </div>
-                                        <p className="text-sm text-gray-600 mb-2">
-                                            Nomor Virtual Account:
-                                        </p>
-                                        <div className="flex items-center justify-between bg-white p-3 rounded border">
-                                            <code className="font-mono text-lg font-bold">
-                                                {vaNumber || "Tidak tersedia"}
-                                            </code>
-                                            {vaNumber && (
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() =>
-                                                        copyToClipboard(
-                                                            vaNumber
-                                                        )
-                                                    }
-                                                >
-                                                    <Copy className="w-4 h-4" />
-                                                </Button>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    {/* Payment Steps */}
-                                    <div className="space-y-3">
-                                        <h3 className="font-semibold text-sm">
-                                            Cara Bayar:
-                                        </h3>
-                                        <div className="space-y-2 text-sm">
-                                            <div className="flex items-start gap-2">
-                                                <div className="w-5 h-5 bg-blue-600 text-white rounded-full text-xs flex items-center justify-center flex-shrink-0 mt-0.5">
-                                                    1
-                                                </div>
-                                                <span>
-                                                    Buka aplikasi mobile banking{" "}
-                                                    {paymentMethod?.type}
-                                                </span>
-                                            </div>
-                                            <div className="flex items-start gap-2">
-                                                <div className="w-5 h-5 bg-blue-600 text-white rounded-full text-xs flex items-center justify-center flex-shrink-0 mt-0.5">
-                                                    2
-                                                </div>
-                                                <span>
-                                                    Pilih menu Transfer atau
-                                                    Bayar
-                                                </span>
-                                            </div>
-                                            <div className="flex items-start gap-2">
-                                                <div className="w-5 h-5 bg-blue-600 text-white rounded-full text-xs flex items-center justify-center flex-shrink-0 mt-0.5">
-                                                    3
-                                                </div>
-                                                <span>
-                                                    Pilih Virtual Account atau
-                                                    Transfer VA
-                                                </span>
-                                            </div>
-                                            <div className="flex items-start gap-2">
-                                                <div className="w-5 h-5 bg-blue-600 text-white rounded-full text-xs flex items-center justify-center flex-shrink-0 mt-0.5">
-                                                    4
-                                                </div>
-                                                <span>
-                                                    Masukkan nomor VA di atas
-                                                </span>
-                                            </div>
-                                            <div className="flex items-start gap-2">
-                                                <div className="w-5 h-5 bg-blue-600 text-white rounded-full text-xs flex items-center justify-center flex-shrink-0 mt-0.5">
-                                                    5
-                                                </div>
-                                                <span>
-                                                    Konfirmasi dan selesaikan
-                                                    pembayaran
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Payment Confirmation Button */}
-                            {transactionStatus === "MENUNGGU_PEMBAYARAN" && (
-                                <Button
-                                    className="w-full mt-4 bg-green-600 hover:bg-green-700"
-                                    onClick={handlePaymentConfirm}
-                                    size="lg"
-                                >
-                                    <CheckCircle2 className="w-5 h-5 mr-2" />
-                                    Ya, Saya Sudah Bayar
-                                </Button>
-                            )}
-
-                            {/* Order Summary */}
-                            <Separator className="my-4" />
-                            <div className="space-y-2 text-sm">
-                                <div className="flex justify-between">
-                                    <span>Subtotal</span>
-                                    <span>{formatPriceIDR(totalPrice)}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>Ongkos Kirim</span>
-                                    <span>{formatPriceIDR(deliveryFee)}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>Biaya Transaksi</span>
-                                    <span>
-                                        {formatPriceIDR(transactionFee)}
-                                    </span>
-                                </div>
-                                <Separator />
-                                <div className="flex justify-between font-semibold text-lg">
-                                    <span>Total</span>
-                                    <span>{formatPriceIDR(totalPaid)}</span>
-                                </div>
-                            </div>
-                        </Card>
+                        {/* Ringkasan Belanja */}
+                        <OrderSummary detail={detail} />
 
                         {/* Customer Information */}
                         <Card className="p-6">

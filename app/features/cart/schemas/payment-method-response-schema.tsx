@@ -76,6 +76,13 @@ export const PaymentMethodListResponseSchema = BaseResponseDataSchema(
 export type PaymentMethodListResponse = z.infer<
     typeof PaymentMethodListResponseSchema
 >;
+
+export const PaymentMethodDetailResponseSchema =
+    BaseResponseDataSchema(PaymentMethodSchema);
+
+export type PaymentMethodDetailResponse = z.infer<
+    typeof PaymentMethodDetailResponseSchema
+>;
 export {
     MediaSchema,
     MediaPaymentMethodSchema,

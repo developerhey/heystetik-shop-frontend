@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Car, Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown } from "lucide-react";
 
 import { cn } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
@@ -42,6 +42,7 @@ export function Combobox({
     onValueChange: (value: string) => void;
 }) {
     const [open, setOpen] = React.useState(false);
+
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
@@ -58,7 +59,13 @@ export function Combobox({
                     <ChevronsUpDown className="opacity-50" />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[300px] p-0" align="start">
+
+            <PopoverContent
+                className="w-[300px] p-0"
+                align="start"
+                onWheel={(e) => e.stopPropagation()}
+                onTouchMove={(e) => e.stopPropagation()}
+            >
                 <Command>
                     {searchText && (
                         <CommandInput
@@ -76,14 +83,20 @@ export function Combobox({
                                 return (
                                     <CommandItem
                                         key={data.value}
-                                        value={data.value}
+                                        value={data.label}
                                         disabled={!isActive}
                                         onSelect={(currentValue) => {
-                                            onValueChange(
-                                                currentValue === value
-                                                    ? ""
-                                                    : currentValue
+                                            const selectedData = listData.find(
+                                                (item) =>
+                                                    item.label === currentValue
                                             );
+                                            if (selectedData) {
+                                                onValueChange(
+                                                    selectedData.value === value
+                                                        ? ""
+                                                        : selectedData.value
+                                                );
+                                            }
                                             setOpen(false);
                                         }}
                                     >
