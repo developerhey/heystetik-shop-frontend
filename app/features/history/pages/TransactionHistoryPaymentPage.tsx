@@ -196,7 +196,10 @@ function QRCodeDisplay({
 
                 {/* QR Code Image */}
                 <div className="flex justify-center">
-                    <QRCodeSVG value={qrString} className="w-[50%] h-[50%]" />
+                    <QRCodeSVG
+                        value={qrString}
+                        className="w-[50%] h-[50%]"
+                    />
                 </div>
             </div>
         </Card>
