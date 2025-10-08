@@ -202,7 +202,7 @@ export function CartPageDesktop({
                     })}
 
                     {carts.length === 0 && (
-                        <p className="mt-4">Tidak ada produk dalam keranjang</p>
+                        <p className="mt-4 min-h-[23vh]">Tidak ada produk dalam keranjang</p>
                     )}
                 </div>
             )}
