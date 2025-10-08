@@ -91,8 +91,11 @@ export default function HeaderDesktop() {
                                     <Avatar>
                                         <AvatarImage
                                             src={
-                                                profile?.media_user_profile_picture ??
-                                                ""
+                                                import.meta.env
+                                                    .VITE_API_URL_FILES +
+                                                profile
+                                                    ?.media_user_profile_picture
+                                                    ?.media?.path
                                             }
                                         />
                                         <AvatarFallback>

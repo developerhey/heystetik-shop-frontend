@@ -31,7 +31,11 @@ export default function ProfileSidebar() {
                     >
                         <Avatar>
                             <AvatarImage
-                                src={profile?.media_user_profile_picture ?? ""}
+                                src={
+                                    import.meta.env.VITE_API_URL_FILES +
+                                    profile?.media_user_profile_picture?.media
+                                        ?.path
+                                }
                             />
                             <AvatarFallback>
                                 {profile?.fullname[0]}
