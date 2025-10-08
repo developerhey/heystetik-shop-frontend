@@ -1,5 +1,6 @@
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Checkbox } from "~/components/ui/checkbox";
 import type { ProductListUI } from "~/shared/schemas/product-ui-schema";
 import { useCart } from "../hooks/useCart";
 import { LoadingOverlay } from "~/components/ui/loading";
@@ -32,6 +33,7 @@ export function CartPageMobile({
     const navigate = useNavigate();
     const {
         handleDeleteFromCart,
+        handleDeleteSelected,
         loading,
         updateQty,
         updateNotes,
@@ -39,6 +41,9 @@ export function CartPageMobile({
         localQty,
         selectedItems,
         toggleItemSelection,
+        toggleSelectAll,
+        isAllSelected,
+        isSomeSelected,
         step,
         setStep,
         getSelectedCarts,
@@ -61,6 +66,7 @@ export function CartPageMobile({
         selectedShippingMethod,
         handlePayment,
         getStockValidationMessage,
+        getAvailableItemsCount,
     } = useCart({ token, carts, userAddress, vouchers, paymentMethods });
 
     return (
@@ -81,9 +87,49 @@ export function CartPageMobile({
                             <div className="w-9" /> {/* Spacer for balance */}
                         </>
                     ) : (
-                        <h1 className="text-lg font-semibold">Keranjang</h1>
+                        <>
+                            <h1 className="text-lg font-semibold">Keranjang</h1>
+                            {carts.length > 0 && (
+                                <div className="flex items-center gap-2">
+                                    {/* Select All Checkbox */}
+                                    <div className="flex items-center space-x-1">
+                                        <Checkbox
+                                            id="select-all-mobile"
+                                            checked={isAllSelected}
+                                            onCheckedChange={toggleSelectAll}
+                                            aria-label="Pilih semua item yang tersedia"
+                                            className="h-4 w-4"
+                                        />
+                                        <label
+                                            htmlFor="select-all-mobile"
+                                            className="text-xs font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 whitespace-nowrap"
+                                        >
+                                            Pilih Semua
+                                        </label>
+                                    </div>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
+
+                {/* Delete Selected Button for Mobile - Show in header when items selected */}
+                {/* {step === "cart" && selectedItems.size > 0 && (
+                    <div className="flex justify-between items-center mt-2">
+                        <span className="text-xs text-muted-foreground">
+                            {selectedItems.size} item dipilih dari {getAvailableItemsCount()} tersedia
+                        </span>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleDeleteSelected}
+                            disabled={loading}
+                            className="text-xs h-7"
+                        >
+                            Hapus
+                        </Button>
+                    </div>
+                )} */}
             </div>
 
             {/* Cart Step */}
@@ -98,44 +144,56 @@ export function CartPageMobile({
                         const isSelected = selectedItems.has(
                             cart.cartId.toString()
                         );
+                        const isAvailable = cart.stock > 0 && qty <= cart.stock;
 
                         return (
-                            <CartMobile
+                            <div
                                 key={key}
-                                cart={cart}
-                                qty={qty}
-                                notes={notes}
-                                isSelected={isSelected}
-                                onToggleSelection={() =>
-                                    toggleItemSelection(cart.cartId.toString())
-                                }
-                                onDecrement={() => {
-                                    if (qty > 1) {
+                            >
+                                <CartMobile
+                                    cart={cart}
+                                    qty={qty}
+                                    notes={notes}
+                                    isSelected={isSelected}
+                                    onToggleSelection={() => {
+                                        if (!isAvailable) {
+                                            toast.error(
+                                                "Stok tidak mencukupi",
+                                                { duration: 1500 }
+                                            );
+                                        } else {
+                                            toggleItemSelection(cart.cartId.toString());
+                                        }
+                                    }}
+                                    isAvailable={isAvailable}
+                                    onDecrement={() => {
+                                        if (qty > 1) {
+                                            updateQty(
+                                                cart.cartId.toString(),
+                                                qty - 1,
+                                                notes
+                                            );
+                                        }
+                                    }}
+                                    onIncrement={() =>
                                         updateQty(
                                             cart.cartId.toString(),
-                                            qty - 1,
+                                            qty + 1,
                                             notes
-                                        );
+                                        )
                                     }
-                                }}
-                                onIncrement={() =>
-                                    updateQty(
-                                        cart.cartId.toString(),
-                                        qty + 1,
-                                        notes
-                                    )
-                                }
-                                onDelete={() =>
-                                    handleDeleteFromCart(cart.cartId.toString())
-                                }
-                                onUpdateNotes={(notes) =>
-                                    updateNotes(
-                                        cart.cartId.toString(),
-                                        qty,
-                                        notes
-                                    )
-                                }
-                            />
+                                    onDelete={() =>
+                                        handleDeleteFromCart(cart.cartId.toString())
+                                    }
+                                    onUpdateNotes={(notes) =>
+                                        updateNotes(
+                                            cart.cartId.toString(),
+                                            qty,
+                                            notes
+                                        )
+                                    }
+                                />
+                            </div>
                         );
                     })}
 
@@ -296,12 +354,12 @@ export function CartPageMobile({
                         <div className="flex justify-between items-center mb-2">
                             <span className="text-sm font-medium">Total</span>
                             <span className="font-semibold">
-                                {formatPriceIDR(getTotalPrice() ?? 0)}
+                                {formatPriceIDR(Math.round(getTotalPrice()) ?? 0)}
                             </span>
                         </div>
 
                         {selectedItems.size > 0 && (
-                            <div className="flex justify-between text-xs text-muted-foreground mb-2">
+                            <div className="flex justify-between text-xs text-muted-foreground mb-1">
                                 <span>{selectedItems.size} item dipilih</span>
                                 <span>
                                     {formatPriceIDR(
@@ -328,7 +386,22 @@ export function CartPageMobile({
                                 <span>
                                     -
                                     {formatPriceIDR(
-                                        getVoucherDiscountText() ?? 0
+                                        Math.round(getVoucherDiscountText() ?? 0) 
+                                    )}
+                                </span>
+                            </div>
+                        )}
+
+                        {selectedPaymentMethod && (
+                            <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                                <span>Biaya Transaksi</span>
+                                <span>
+                                    {formatPriceIDR(
+                                        paymentMethods?.filter(
+                                            (method) =>
+                                                method?.id?.toString() ==
+                                                selectedPaymentMethod
+                                        )[0]?.platform_fee_amount ?? 0
                                     )}
                                 </span>
                             </div>

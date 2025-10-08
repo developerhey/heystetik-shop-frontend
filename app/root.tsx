@@ -29,6 +29,9 @@ import { mapWishlistListResponseToUI } from "./shared/schemas/wishlist-mapper";
 import { getTotalCartList } from "./shared/services/cart-service";
 import { getProfile } from "./shared/services/profile-service";
 import { LoadingOverlay } from "./components/ui/loading";
+import { initializeApp } from "firebase/app";
+import { getAnalytics, logEvent } from "firebase/analytics";
+
 export const links: Route.LinksFunction = () => [];
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -83,7 +86,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     <ProfileSidebar />
                     <Toaster richColors position="top-center" />
                     <Footer isMobile={isMobile} />
-                    <LoadingOverlay show={isLoading}/>
+                    <LoadingOverlay show={isLoading} />
                 </GoogleOAuthProvider>
                 <ScrollRestoration />
                 <Scripts />
@@ -102,11 +105,22 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+    // for tracking crash only
+    const firebaseConfig = {
+        apiKey: "AIzaSyDTfpPKAEEHP7ovl3ig8m_1VVFHHzUReRo",
+        authDomain: "heystetik-c5f3f.firebaseapp.com",
+        projectId: "heystetik-c5f3f",
+        storageBucket: "heystetik-c5f3f.firebasestorage.app",
+        messagingSenderId: "110425577691",
+        appId: "1:110425577691:web:9331e3ad64b40b3e3e54fe",
+        measurementId: "G-FSBKL45TJ9",
+    };
+
     const data = useLoaderData<typeof loader>() ?? {};
     const { isMobile = false } = data;
 
     let message = "Oops!";
-    let details = "An unexpected error occurred.";
+    let details = "An    error occurred.";
     let stack: string | undefined;
 
     if (isApiError(error)) {
@@ -129,6 +143,13 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     } else if (import.meta.env.DEV && error && error instanceof Error) {
         details = error.message;
         stack = error.stack;
+        console.log(error);
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        logEvent(analytics, "error", {
+            details: error.message,
+            stack: error.stack,
+        });
     }
 
     return (

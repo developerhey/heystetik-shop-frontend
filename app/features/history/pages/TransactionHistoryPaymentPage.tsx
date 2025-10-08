@@ -385,7 +385,7 @@ export function PaymentPage({ transaction, howToPays }: PaymentPageProps) {
                                         Nomor Virtual Account
                                     </p>
                                     <div className="flex items-center justify-between bg-white p-4 rounded-lg border-2 border-blue-200">
-                                        <code className="font-mono text-2xl font-bold text-gray-900 tracking-wider">
+                                        <code className="font-mono text-md md:text-2xl font-bold text-gray-900 tracking-wider">
                                             {vaNumber || "Tidak tersedia"}
                                         </code>
                                         {vaNumber && (

@@ -11,6 +11,7 @@ import { toast } from "sonner";
 interface CartMobileProps extends CartProps {
     isSelected?: boolean;
     onToggleSelection?: () => void;
+    isAvailable?: boolean;
 }
 
 export function CartMobile({
@@ -23,6 +24,7 @@ export function CartMobile({
     onUpdateNotes,
     isSelected = false,
     onToggleSelection,
+    isAvailable,
 }: CartMobileProps) {
     const navigate = useNavigate();
     const [inputNotes, setInputNotes] = useState(notes);
@@ -45,7 +47,6 @@ export function CartMobile({
 
     const handleDelete = () => {
         onDelete();
-        toast.success("Produk dihapus dari keranjang", { duration: 1500 });
     };
 
     const handleToggleSelection = () => {
@@ -66,10 +67,11 @@ export function CartMobile({
                     {/* Checkbox */}
                     <div className="flex items-start">
                         <Checkbox
-                            id={`cart-mobile-${cart.cartId}`}
                             checked={isSelected}
-                            onCheckedChange={handleToggleSelection}
+                            onCheckedChange={onToggleSelection}
+                            disabled={!isAvailable}
                             aria-label={`Pilih ${cart.title}`}
+                            className={!isAvailable ? "opacity-50" : ""}
                         />
                     </div>
 

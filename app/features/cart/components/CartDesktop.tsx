@@ -33,8 +33,7 @@ export function CartDesktop({
     };
 
     const handleDelete = () => {
-        onDelete(); // This will now automatically remove from selection
-        toast.success("Produk dihapus dari keranjang", { duration: 1500 });
+        onDelete();
     };
 
     return (

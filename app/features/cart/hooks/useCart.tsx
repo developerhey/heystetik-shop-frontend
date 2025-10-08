@@ -73,13 +73,23 @@ export function useCart({
                 });
         }
     }, [step]);
+
+    // Update the useEffect that calculates selection states
     useEffect(() => {
-        const totalItems = carts.length;
+        const totalAvailableItems = getAvailableItemsCount();
         const selectedCount = selectedItems.size;
 
-        setIsAllSelected(selectedCount > 0 && selectedCount === totalItems);
-        setIsSomeSelected(selectedCount > 0 && selectedCount < totalItems);
-    }, [selectedItems, carts.length]);
+        // Only consider available items when calculating "all selected"
+        const availableCartIds = getAvailableCartIds();
+        const allAvailableSelected =
+            availableCartIds.every((id) => selectedItems.has(id)) &&
+            selectedCount > 0;
+
+        setIsAllSelected(allAvailableSelected);
+        setIsSomeSelected(
+            selectedCount > 0 && selectedCount < totalAvailableItems
+        );
+    }, [selectedItems, carts, localQty]);
 
     // Toggle individual item selection
     const toggleItemSelection = (cartId: string) => {
@@ -94,17 +104,33 @@ export function useCart({
         });
     };
 
-    // Toggle select all
+    // Get available items (in stock and quantity <= stock)
+    const getAvailableItems = () => {
+        return carts.filter((cart) => {
+            const qty = localQty[cart.cartId.toString()] ?? cart.qty;
+            return cart.stock > 0 && qty <= cart.stock;
+        });
+    };
+
+    // Get count of available items
+    const getAvailableItemsCount = () => {
+        return getAvailableItems().length;
+    };
+
+    // Get available cart IDs
+    const getAvailableCartIds = () => {
+        return getAvailableItems().map((cart) => cart.cartId.toString());
+    };
+
+    // Toggle select all - only select available items
     const toggleSelectAll = () => {
         if (isAllSelected) {
             // Deselect all
             setSelectedItems(new Set());
         } else {
-            // Select all
-            const allCartIds = new Set(
-                carts.map((cart) => cart.cartId.toString())
-            );
-            setSelectedItems(allCartIds);
+            // Select only available items
+            const availableCartIds = getAvailableCartIds();
+            setSelectedItems(new Set(availableCartIds));
         }
     };
 
@@ -421,5 +447,6 @@ export function useCart({
         getVoucherDiscountText,
         handlePayment,
         getStockValidationMessage,
+        getAvailableItemsCount
     };
 }

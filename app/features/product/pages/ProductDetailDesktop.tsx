@@ -110,9 +110,9 @@ export function ProductDetailDesktop({ product }: { product: ProductUI }) {
                                     )}
                                 />
                             </IconWrapper>
-                            <IconWrapper>
+                            {/* <IconWrapper>
                                 <Share2 size={16} />
-                            </IconWrapper>
+                            </IconWrapper> */}
                         </div>
                     </div>
                     <p className="text-gray-600 mb-2">{product.title}</p>

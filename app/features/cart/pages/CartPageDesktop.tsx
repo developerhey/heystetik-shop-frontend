@@ -22,6 +22,7 @@ import { type PaymentMethod } from "../schemas/payment-method-response-schema";
 import type { Voucher } from "../schemas/voucher-response-schema";
 import { formatPriceIDR } from "~/lib/utils";
 import { toast } from "sonner";
+
 export function CartPageDesktop({
     token,
     carts,
@@ -73,14 +74,47 @@ export function CartPageDesktop({
         selectedShippingMethod,
         handlePayment,
         getStockValidationMessage,
+        getAvailableItemsCount,
     } = useCart({ token, carts, userAddress, vouchers, paymentMethods });
 
     return (
         <div className="w-full px-54 py-12 grid grid-cols-3 gap-6 bg-muted">
             {step == "cart" && (
                 <div className="col-span-2 bg-white rounded-md p-6 border border-gray-200">
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex flex-col  mb-4">
                         <h2 className="text-xl font-semibold">Keranjang</h2>
+                        {carts.length > 0 && (
+                            <div className="flex items-center gap-4">
+                                {/* Select All Checkbox */}
+                                <div className="flex items-center space-x-2 mt-4">
+                                    <Checkbox
+                                        id="select-all"
+                                        checked={isAllSelected}
+                                        onCheckedChange={toggleSelectAll}
+                                        aria-label="Pilih semua item yang tersedia"
+                                    />
+                                    <label
+                                        htmlFor="select-all"
+                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                    >
+                                        Pilih Semua ({getAvailableItemsCount()}{" "}
+                                        tersedia)
+                                    </label>
+                                </div>
+
+                                {/* Delete Selected Button */}
+                                {/* {selectedItems.size > 0 && (
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={handleDeleteSelected}
+                                        disabled={loading}
+                                    >
+                                        Hapus yang dipilih ({selectedItems.size})
+                                    </Button>
+                                )} */}
+                            </div>
+                        )}
                     </div>
 
                     <div className="grid grid-cols-6 border-b pb-2 text-sm font-medium text-gray-500">
@@ -101,24 +135,17 @@ export function CartPageDesktop({
                         const isSelected = selectedItems.has(
                             cart.cartId.toString()
                         );
+                        const isAvailable = cart.stock > 0 && qty <= cart.stock;
 
                         return (
-                            <div
-                                key={key}
-                                className="flex items-center border-b py-4"
-                            >
+                            <div key={key} className={`flex items-center py-4`}>
                                 {/* Checkbox for individual item */}
                                 <div className="pr-4 self-start mt-4">
                                     <Checkbox
                                         id={`cart-${cart.cartId}`}
                                         checked={isSelected}
                                         onCheckedChange={() => {
-                                            if (cart.stock == 0) {
-                                                toast.error(
-                                                    "Stok tidak mencukupi",
-                                                    { duration: 1500 }
-                                                );
-                                            } else if (cart.stock < qty) {
+                                            if (!isAvailable) {
                                                 toast.error(
                                                     "Stok tidak mencukupi",
                                                     { duration: 1500 }
@@ -129,6 +156,7 @@ export function CartPageDesktop({
                                                 );
                                             }
                                         }}
+                                        disabled={!isAvailable}
                                         aria-label={`Pilih ${cart.title}`}
                                     />
                                 </div>
@@ -179,6 +207,7 @@ export function CartPageDesktop({
                 </div>
             )}
 
+            {/* Rest of the component remains the same */}
             {step == "checkout" && (
                 <div className="col-span-2 bg-white rounded-md p-6 border border-gray-200 flex flex-col">
                     <div className="flex flex-row justify-between items-center">
@@ -335,7 +364,9 @@ export function CartPageDesktop({
                                 <span>Diskon Voucher</span>
                                 <span>
                                     {formatPriceIDR(
-                                        getVoucherDiscountText() ?? 0
+                                        Math.round(
+                                            getVoucherDiscountText() ?? 0
+                                        )
                                     )}
                                 </span>
                             </div>
@@ -361,7 +392,11 @@ export function CartPageDesktop({
                         <hr />
                         <div className="flex justify-between font-semibold">
                             <span>Total</span>
-                            <span>{formatPriceIDR(getTotalPrice() ?? 0)}</span>
+                            <span>
+                                {formatPriceIDR(
+                                    Math.round(getTotalPrice() ?? 0)
+                                )}
+                            </span>
                         </div>
                     </CardContent>
                     <CardFooter className="flex flex-col">

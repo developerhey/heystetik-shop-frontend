@@ -24,23 +24,23 @@ export async function action({ request }: Route.ActionArgs) {
             voucher_id: formData.get("voucher_id")
                 ? parseInt(formData.get("voucher_id") as string)
                 : null,
-            total_price: parseFloat(formData.get("total_price") as string),
+            total_price: Math.round(parseFloat(formData.get("total_price") as string)),
             delivery_fee: parseFloat(formData.get("delivery_fee") as string),
-            total_discount: Math.abs(
-                parseFloat(formData.get("total_discount") as string)
+            total_discount: Math.round(
+                Math.abs(parseFloat(formData.get("total_discount") as string))
             ),
             tax: parseFloat(formData.get("tax") as string),
             transaction_fee: parseFloat(
                 formData.get("transaction_fee") as string
             ),
-            total_paid: parseFloat(formData.get("total_paid") as string),
+            total_paid: Math.round(parseFloat(formData.get("total_paid") as string)),
         };
 
         const result = await orderProduct(accessToken, orderData);
 
         return redirect(`/user/payment/${result.data?.transaction?.id}`);
     } catch (error: any) {
-        console.log(error);
+        console.log(error.data.data);
         return data(
             {
                 error: error.message || "Gagal beli, silahkan coba lagi",
