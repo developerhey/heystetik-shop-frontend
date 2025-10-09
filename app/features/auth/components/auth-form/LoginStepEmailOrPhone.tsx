@@ -1,6 +1,8 @@
 import { DialogHeader, DialogTitle } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
+import FacebookLogin from "@greatsumini/react-facebook-login";
+import { toast } from "sonner";
 
 export function LoginStepEmailOrPhone({
     value,
@@ -8,6 +10,7 @@ export function LoginStepEmailOrPhone({
     onChange,
     onNextClick,
     onGoogleLoginClick,
+    onFacebookLoginClick,
     onRegisterClick,
 }: {
     value: string;
@@ -15,6 +18,7 @@ export function LoginStepEmailOrPhone({
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onNextClick: () => void;
     onGoogleLoginClick: () => void;
+    onFacebookLoginClick: (token: string) => void;
     onRegisterClick: () => void;
 }) {
     return (
@@ -47,8 +51,7 @@ export function LoginStepEmailOrPhone({
             >
                 Selanjutnya
             </Button>
-
-            {/* <div className="flex items-center my-4">
+            <div className="flex items-center my-4">
                 <div className="flex-1 border-t" />
                 <span className="px-2 text-xs text-muted-foreground">
                     atau masuk dengan
@@ -58,7 +61,7 @@ export function LoginStepEmailOrPhone({
             <Button
                 variant={"outline"}
                 size="lg"
-                className="w-full"
+                className="w-full mb-2"
                 onClick={onGoogleLoginClick}
             >
                 <img
@@ -68,7 +71,32 @@ export function LoginStepEmailOrPhone({
                     alt="Google"
                 />
                 Google
-            </Button> */}
+            </Button>
+            <FacebookLogin
+                appId={import.meta.env.VITE_FACEBOOK_APP_ID}
+                render={({ onClick, logout }) => (
+                    <Button
+                        variant={"outline"}
+                        size="lg"
+                        className="w-full bg-blue-800 hover:bg-blue-900 text-white"
+                        onClick={onClick}
+                    >
+                        <img
+                            src="/icons/facebook.png"
+                            loading="lazy"
+                            className="size-4"
+                            alt="Facebook"
+                        />
+                        Facebook
+                    </Button>
+                )}
+                onSuccess={(response) => {
+                    onFacebookLoginClick(response.accessToken);
+                }}
+                onFail={(error) => {
+                    toast.error("Facebook login gagal");
+                }}
+            />
             <div className="text-center mt-4 text-xs text-muted-foreground">
                 Belum punya akun Heystetik?{" "}
                 <span

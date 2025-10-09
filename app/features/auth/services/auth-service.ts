@@ -38,6 +38,30 @@ export const login = ({
         LoginResponseSchema
     );
 
+export const loginByGoogle = ({ token }: { token: string }) =>
+    request<LoginResponse>(
+        {
+            url: path + "google/login-by-token",
+            method: "POST",
+            data: {
+                token: token,
+            },
+        },
+        LoginResponseSchema
+    );
+
+export const loginByFacebook = ({ token }: { token: string }) =>
+    request<LoginResponse>(
+        {
+            url: path + "facebook/login-by-token",
+            method: "POST",
+            data: {
+                token: token,
+            },
+        },
+        LoginResponseSchema
+    );
+
 export const registerStepPhone = ({ phoneNumber }: { phoneNumber: string }) =>
     request<RegisterResponse>(
         {

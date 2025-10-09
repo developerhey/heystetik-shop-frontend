@@ -24,6 +24,7 @@ export default function AuthForm() {
         handleGoogleLogin,
         handleRegisterStep,
         handleForgotPassword,
+        handleFacebookLogin
     } = useAuth();
 
     return (
@@ -34,6 +35,7 @@ export default function AuthForm() {
             >
                 {step === "emailOrPhoneNumber" && (
                     <LoginStepEmailOrPhone
+                        onFacebookLoginClick={handleFacebookLogin}
                         value={values.emailOrPhoneNumber as string}
                         error={errors.emailOrPhoneNumber}
                         onChange={(e) => {

@@ -28,6 +28,16 @@ export async function loader({ request }: Route.LoaderArgs) {
     };
 }
 
+export function meta() {
+  return [
+    { title: "Keranjang" },
+    {
+      property: "og:title",
+      content: "Keranjang",
+    },
+  ];
+}
+
 export default function Cart({ loaderData }: Route.ComponentProps) {
     const { carts, userAddress, token, paymentMethods, vouchers } = loaderData;
     const { isMobile } = useOutletContext<ContextType>();

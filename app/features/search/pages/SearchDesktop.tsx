@@ -21,11 +21,13 @@ export function SearchDesktop(props: SearchProps) {
         });
 
     return (
-        <div className="flex flex-col pt-4 pb-8">
-            <h1 className="text-2xl font-bold text-center my-4 bg-primary rounded-md mx-54 py-16 text-white">
-                {category ? category : "Semua Skincare"}
-            </h1>
-            <div className="grid grid-cols-[250px_1fr] mt-8 px-54">
+        <div className="flex flex-col pt-4 pb-8 min-h-screen">
+            <div className="max-w-6xl mx-auto w-full px-8">
+                <h1 className="text-2xl font-bold text-center my-4 bg-primary rounded-md py-16 text-white">
+                    {category ? category : "Semua Skincare"}
+                </h1>
+            </div>
+            <div className="grid grid-cols-[250px_1fr] mt-8 max-w-6xl px-8 mx-auto w-full">
                 <FilterListDesktop
                     categoriesSkinCare={props.categoriesSkinCare}
                     concerns={props.concerns}
@@ -51,8 +53,10 @@ export function SearchDesktop(props: SearchProps) {
                         ))}
                     </InfiniteScroll>
                 ) : (
-                    <div className="text-center mt-11">
-                        Belum ada skincare...
+                    <div className="w-full grid grid-cols-4 gap-4 mt-7 p-4">
+                        <div className="col-span-4 text-center mt-11">
+                            Belum ada skincare...
+                        </div>
                     </div>
                 )}
             </div>

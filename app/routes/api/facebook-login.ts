@@ -1,24 +1,14 @@
 import type { Route } from "./+types/login";
 import { data } from "react-router";
-import { LoginParamSchema } from "~/features/auth/schemas/login-param-schema";
-import { login } from "~/features/auth/services/auth-service";
+import { loginByFacebook } from "~/features/auth/services/auth-service";
 import { commitSession, getSession } from "~/sessions.server";
 
 export async function action({ request }: Route.ActionArgs) {
     const formData = await request.formData();
-    const parsed = LoginParamSchema.safeParse({
-        emailOrPhoneNumber: formData.get("emailOrPhoneNumber"),
-        otp: formData.get("otp"),
-    });
-
-    if (!parsed.success) {
-        return data({ error: "Invalid input data" }, { status: 400 });
-    }
-
-    const { emailOrPhoneNumber, otp } = parsed.data;
+    const token = formData.get("facebookToken") as string;
 
     try {
-        const response = await login({ emailOrPhoneNumber, password: otp });
+        const response = await loginByFacebook({ token });
         // Get current session
         const session = await getSession(request.headers.get("Cookie"));
         // Store credentials in session
@@ -33,7 +23,9 @@ export async function action({ request }: Route.ActionArgs) {
             {
                 success: true,
                 message: "Login berhasil",
-                data: "",
+                data: {
+                    loginWithSocmed: true
+                },
             },
             {
                 status: 200,
@@ -43,6 +35,7 @@ export async function action({ request }: Route.ActionArgs) {
             }
         );
     } catch (error: any) {
+        console.log(error.data.errors);
         return data(
             { error: error.message || "Login gagal" },
             { status: error.status || 500 }

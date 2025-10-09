@@ -70,24 +70,26 @@ export function ProductDetailDesktop({ product }: { product: ProductUI }) {
     );
 
     return (
-        <div className="flex flex-col px-54 pt-12 pb-24 min-h-screen">
-            <div className="grid grid-cols-[30rem_1fr] gap-x-12">
-                <Carousel className="w-[90%] h-[25rem]">
-                    <CarouselContent>
-                        {product.images.map((img, index) => (
-                            <CarouselItem key={index}>
-                                <img
-                                    src={img.path || ""}
-                                    alt={img.path}
-                                    className="h-[25rem] rounded-lg w-full object-fill"
-                                    loading="lazy"
-                                />
-                            </CarouselItem>
-                        ))}
-                    </CarouselContent>
-                    <CarouselPrevious />
-                    <CarouselNext />
-                </Carousel>
+        <div className="flex flex-col max-w-6xl mx-auto pt-12 pb-24 min-h-screen">
+            <div className="flex flex-col px-8 xl:px-0 xl:grid xl:grid-cols-[30rem_1fr] gap-x-12">
+                <div className="mx-12 xl:mx-0">
+                    <Carousel className="w-full xl:w-[90%] h-[25rem] mb-16 xl:mb-0">
+                        <CarouselContent>
+                            {product.images.map((img, index) => (
+                                <CarouselItem key={index}>
+                                    <img
+                                        src={img.path || ""}
+                                        alt={img.path}
+                                        className="h-[25rem] rounded-lg w-full object-fill"
+                                        loading="lazy"
+                                    />
+                                </CarouselItem>
+                            ))}
+                        </CarouselContent>
+                        <CarouselPrevious />
+                        <CarouselNext />
+                    </Carousel>
+                </div>
 
                 <div>
                     <div className="flex flex-row justify-between items-center">

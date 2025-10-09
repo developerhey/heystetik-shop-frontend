@@ -21,6 +21,16 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     };
 }
 
+export function meta({ data }: Route.MetaArgs) {
+    return [
+        { title: data?.skincareDetail?.title ?? "Detil Produk" },
+        {
+            property: "og:title",
+            content: data?.skincareDetail?.title ?? "Detil Produk",
+        },
+    ];
+}
+
 export default function Product({ loaderData }: Route.ComponentProps) {
     const { isMobile } = useOutletContext<ContextType>();
     return isMobile ? (

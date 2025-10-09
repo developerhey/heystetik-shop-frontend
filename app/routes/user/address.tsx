@@ -12,6 +12,16 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     };
 }
 
+export function meta() {
+    return [
+        { title: "Daftar Alamat" },
+        {
+            property: "og:title",
+            content: "Daftar Alamat",
+        },
+    ];
+}
+
 export default function Address({ loaderData }: Route.ComponentProps) {
     return <UserAddressPage userAddress={loaderData.userAddress} />;
 }

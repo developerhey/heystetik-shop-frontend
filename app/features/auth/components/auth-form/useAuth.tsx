@@ -58,6 +58,7 @@ type UseAuthReturn = AuthState & {
     clearErrors: () => void;
     handleLogin: () => void;
     handleGoogleLogin: () => void;
+    handleFacebookLogin: (token: string) => void;
     handleRegisterStep: (isResendOtp?: boolean) => void;
     handleForgotPassword: () => void;
 };
@@ -107,7 +108,7 @@ export const useAuth = (): UseAuthReturn => {
                 duration: 1500,
             });
 
-            if (state.step === "otp") {
+            if (state.step === "otp" || fetcher.data?.data?.loginWithSocmed) {
                 // Login successful, close dialog
                 setOpenLogin(false);
                 revalidator.revalidate();
@@ -427,6 +428,15 @@ export const useAuth = (): UseAuthReturn => {
         [state.values, state.step, validateField, fetcher, setStep]
     );
 
+    const handleFacebookLogin = (token: string) => {
+        const formData = new FormData();
+        formData.append("facebookToken", token);
+        fetcher.submit(formData, {
+            method: "post",
+            action: "/api/google-login",
+        });
+    };
+
     const handleGoogleLogin = useGoogleLogin({
         onSuccess: (tokenResponse) => {
             const formData = new FormData();
@@ -437,7 +447,7 @@ export const useAuth = (): UseAuthReturn => {
             });
         },
         onError: (error) => {
-            // toast.error("Google login failed");
+            toast.error("Google login gagal");
         },
     });
 
@@ -456,5 +466,6 @@ export const useAuth = (): UseAuthReturn => {
         handleGoogleLogin,
         handleRegisterStep,
         handleForgotPassword,
+        handleFacebookLogin,
     };
 };

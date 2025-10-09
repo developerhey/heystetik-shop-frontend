@@ -21,6 +21,8 @@ export default [
     ]),
     ...prefix("api", [
         route("login", "routes/api/login.ts"),
+        route("google-login", "routes/api/google-login.ts"),
+        route("facebook-login", "routes/api/facebook-login.ts"),
         route("forgot-password", "routes/api/forgot-password.ts"),
         route("logout", "routes/api/logout.ts"),
         route("add-to-cart", "routes/api/add-cart.ts"),

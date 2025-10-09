@@ -12,6 +12,16 @@ export async function loader({ request }: Route.LoaderArgs) {
     };
 }
 
+export function meta() {
+  return [
+    { title: "Riwayat Transaksi" },
+    {
+      property: "og:title",
+      content: "Riwayat Transaksi",
+    },
+  ];
+}
+
 export default function TransactionHistory({ loaderData }: Route.ComponentProps) {
     return <TransactionHistoryPage transactionHistory={loaderData.transactionHistory} />;
 }

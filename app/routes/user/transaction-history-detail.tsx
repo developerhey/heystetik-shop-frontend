@@ -16,6 +16,18 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     };
 }
 
-export default function TransactionHistoryDetail({ loaderData }: Route.ComponentProps) {
+export function meta({ data }: Route.MetaArgs) {
+    return [
+        { title: data?.detail?.invoice_number ?? "Detil Transaksi" },
+        {
+            property: "og:title",
+            content: data?.detail?.invoice_number ?? "Detil Transaksi",
+        },
+    ];
+}
+
+export default function TransactionHistoryDetail({
+    loaderData,
+}: Route.ComponentProps) {
     return <TransactionHistoryDetailPage detail={loaderData.detail} />;
 }

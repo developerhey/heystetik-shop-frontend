@@ -50,6 +50,16 @@ export async function loader({ request }: Route.LoaderArgs) {
     };
 }
 
+export function meta() {
+  return [
+    { title: "Cari Skincare" },
+    {
+      property: "og:title",
+      content: "Cari skincare",
+    },
+  ];
+}
+
 export default function Search({ loaderData }: Route.ComponentProps) {
     const { isMobile } = useOutletContext<ContextType>();
     return isMobile ? (
