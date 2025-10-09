@@ -74,6 +74,9 @@ export function LoginStepEmailOrPhone({
             </Button>
             <FacebookLogin
                 appId={import.meta.env.VITE_FACEBOOK_APP_ID}
+                initParams={{
+                    version: "v21.0",
+                }}
                 render={({ onClick, logout }) => (
                     <Button
                         variant={"outline"}
