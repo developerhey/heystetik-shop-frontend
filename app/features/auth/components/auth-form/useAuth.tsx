@@ -111,6 +111,7 @@ export const useAuth = (): UseAuthReturn => {
             if (state.step === "otp" || fetcher.data?.data?.loginWithSocmed) {
                 // Login successful, close dialog
                 setOpenLogin(false);
+                setState(initialState)
                 revalidator.revalidate();
             } else {
                 // Move to next step for registration flow
