@@ -202,7 +202,9 @@ export function CartPageDesktop({
                     })}
 
                     {carts.length === 0 && (
-                        <p className="mt-4 min-h-[23vh]">Tidak ada produk dalam keranjang</p>
+                        <p className="mt-4 min-h-[23vh]">
+                            Tidak ada produk dalam keranjang
+                        </p>
                     )}
                 </div>
             )}
@@ -394,7 +396,10 @@ export function CartPageDesktop({
                             <span>Total</span>
                             <span>
                                 {formatPriceIDR(
-                                    Math.round(getTotalPrice() ?? 0)
+                                    Math.max(
+                                        0,
+                                        Math.round(getTotalPrice() ?? 0)
+                                    )
                                 )}
                             </span>
                         </div>

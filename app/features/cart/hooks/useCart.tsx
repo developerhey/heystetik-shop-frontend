@@ -266,11 +266,15 @@ export function useCart({
             if (shippingFee < freeShippingAmount) return -shippingFee;
             else return shippingFee - freeShippingAmount;
         } else if (selectedVoucher?.promotion_type == "Discount") {
-            return (
-                (-displaySummary.subtotal *
-                    (selectedVoucher.discount_percentage ?? 0)) /
-                100
-            );
+            if (selectedVoucher.discount_type == "Fix Amount") {
+                return -(selectedVoucher?.discount_fix_amount ?? 0);
+            } else {
+                return (
+                    (-displaySummary.subtotal *
+                        (selectedVoucher.discount_percentage ?? 0)) /
+                    100
+                );
+            }
         } else 0;
     };
 
@@ -383,10 +387,15 @@ export function useCart({
         formData.append("user_address_id", userAddress.id.toString());
         formData.append("voucher_id", selectedVoucherId || "");
         formData.append("total_price", displaySummary.subtotal.toString());
-        formData.append(
-            "delivery_fee",
-            (selectedShippingMethod?.price ?? 0).toString()
-        );
+        let shippingFee = 0;
+        if (selectedVoucher?.promotion_type == "Free Shipping") {
+            shippingFee =
+                (selectedShippingMethod?.price ?? 0) +
+                (getVoucherDiscountText() ?? 0);
+        } else {
+            shippingFee = selectedShippingMethod?.price ?? 0;
+        }
+        formData.append("delivery_fee", shippingFee.toString());
         formData.append(
             "total_discount",
             (getVoucherDiscountText() ?? 0).toString()
@@ -447,6 +456,6 @@ export function useCart({
         getVoucherDiscountText,
         handlePayment,
         getStockValidationMessage,
-        getAvailableItemsCount
+        getAvailableItemsCount,
     };
 }

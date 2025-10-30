@@ -24,7 +24,9 @@ export async function action({ request }: Route.ActionArgs) {
             voucher_id: formData.get("voucher_id")
                 ? parseInt(formData.get("voucher_id") as string)
                 : null,
-            total_price: Math.round(parseFloat(formData.get("total_price") as string)),
+            total_price: Math.round(
+                parseFloat(formData.get("total_price") as string)
+            ),
             delivery_fee: parseFloat(formData.get("delivery_fee") as string),
             total_discount: Math.round(
                 Math.abs(parseFloat(formData.get("total_discount") as string))
@@ -33,7 +35,10 @@ export async function action({ request }: Route.ActionArgs) {
             transaction_fee: parseFloat(
                 formData.get("transaction_fee") as string
             ),
-            total_paid: Math.round(parseFloat(formData.get("total_paid") as string)),
+            total_paid: Math.max(
+                0,
+                Math.round(parseFloat(formData.get("total_paid") as string))
+            ),
         };
 
         const result = await orderProduct(accessToken, orderData);

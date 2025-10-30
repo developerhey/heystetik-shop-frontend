@@ -186,7 +186,7 @@ const ProductSchema = z.object({
     discount_fix_amount: z.number().nullish(),
     product_is_active: z.boolean().nullish(),
     product_stock: z.number().nullish(),
-    product_threshold: z.number().nullish(),
+    product_threshold: z.string().nullish(),
     product_sku: z.string().nullish(),
     rating: z.number().nullish(),
     shipping_product_weight: z.number().nullish(),

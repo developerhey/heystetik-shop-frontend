@@ -147,9 +147,7 @@ export function CartPageMobile({
                         const isAvailable = cart.stock > 0 && qty <= cart.stock;
 
                         return (
-                            <div
-                                key={key}
-                            >
+                            <div key={key}>
                                 <CartMobile
                                     cart={cart}
                                     qty={qty}
@@ -162,7 +160,9 @@ export function CartPageMobile({
                                                 { duration: 1500 }
                                             );
                                         } else {
-                                            toggleItemSelection(cart.cartId.toString());
+                                            toggleItemSelection(
+                                                cart.cartId.toString()
+                                            );
                                         }
                                     }}
                                     isAvailable={isAvailable}
@@ -183,7 +183,9 @@ export function CartPageMobile({
                                         )
                                     }
                                     onDelete={() =>
-                                        handleDeleteFromCart(cart.cartId.toString())
+                                        handleDeleteFromCart(
+                                            cart.cartId.toString()
+                                        )
                                     }
                                     onUpdateNotes={(notes) =>
                                         updateNotes(
@@ -354,7 +356,12 @@ export function CartPageMobile({
                         <div className="flex justify-between items-center mb-2">
                             <span className="text-sm font-medium">Total</span>
                             <span className="font-semibold">
-                                {formatPriceIDR(Math.round(getTotalPrice()) ?? 0)}
+                                {formatPriceIDR(
+                                    Math.max(
+                                        0,
+                                        Math.round(getTotalPrice() ?? 0)
+                                    )
+                                )}
                             </span>
                         </div>
 
@@ -386,7 +393,9 @@ export function CartPageMobile({
                                 <span>
                                     -
                                     {formatPriceIDR(
-                                        Math.round(getVoucherDiscountText() ?? 0) 
+                                        Math.round(
+                                            getVoucherDiscountText() ?? 0
+                                        )
                                     )}
                                 </span>
                             </div>
