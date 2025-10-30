@@ -267,7 +267,10 @@ export function useCart({
             else return shippingFee - freeShippingAmount;
         } else if (selectedVoucher?.promotion_type == "Discount") {
             if (selectedVoucher.discount_type == "Fix Amount") {
-                return -(selectedVoucher?.discount_fix_amount ?? 0);
+                return (selectedVoucher?.discount_fix_amount ?? 0) >
+                    displaySummary.subtotal
+                    ? -displaySummary.subtotal
+                    : -(selectedVoucher?.discount_fix_amount ?? 0);
             } else {
                 return (
                     (-displaySummary.subtotal *
