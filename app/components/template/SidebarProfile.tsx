@@ -73,6 +73,7 @@ export default function ProfileSidebar() {
                     <div
                         className="text-sm px-4 py-2 cursor-pointer hover:bg-gray-100 text-foreground"
                         onClick={() => {
+                            setOpenProfile(false);
                             fetcher.submit(null, {
                                 method: "post",
                                 action: "/api/logout",
