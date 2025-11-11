@@ -1,11 +1,17 @@
 import { User, ShoppingCart, Heart, Search, ArrowLeft } from "lucide-react";
 import { InputWithIcon } from "~/components/ui/input";
-import { Link, useNavigate, useSearchParams } from "react-router";
+import {
+    Link,
+    useNavigate,
+    useRouteError,
+    useSearchParams,
+} from "react-router";
 import { useLocation } from "react-router";
 import { useDialogStore } from "~/shared/stores/useDialogStore";
 import IconWrapper from "../IconWrapper";
 import { useRouteLoaderData } from "react-router";
 export default function HeaderMobile() {
+    const error = useRouteError();
     const navigate = useNavigate();
     const { setOpenLogin, setOpenWishlist, isOpenProfile, setOpenProfile } =
         useDialogStore();
@@ -46,53 +52,57 @@ export default function HeaderMobile() {
                         </span>
                     </div>
                 )}
-                <div className="flex items-center">
-                    <IconWrapper
-                        badgeCount={wishlist.length}
-                        onClick={() => setOpenWishlist(true)}
-                    >
-                        <Heart size={iconSize} strokeWidth={iconStroke} />
-                    </IconWrapper>
-                    <Link to="cart">
-                        <IconWrapper badgeCount={totalCart}>
-                            <ShoppingCart
-                                size={iconSize}
-                                strokeWidth={iconStroke}
-                            />
+                {!error && (
+                    <div className="flex items-center">
+                        <IconWrapper
+                            badgeCount={wishlist.length}
+                            onClick={() => setOpenWishlist(true)}
+                        >
+                            <Heart size={iconSize} strokeWidth={iconStroke} />
                         </IconWrapper>
-                    </Link>
-                    <IconWrapper
-                        onClick={() => {
-                            if (!isLoggedIn) setOpenLogin(true);
-                            else setOpenProfile(true)
-                        }}
-                    >
-                        <User size={iconSize} strokeWidth={iconStroke} />
-                    </IconWrapper>
-                </div>
+                        <Link to="cart">
+                            <IconWrapper badgeCount={totalCart}>
+                                <ShoppingCart
+                                    size={iconSize}
+                                    strokeWidth={iconStroke}
+                                />
+                            </IconWrapper>
+                        </Link>
+                        <IconWrapper
+                            onClick={() => {
+                                if (!isLoggedIn) setOpenLogin(true);
+                                else setOpenProfile(true);
+                            }}
+                        >
+                            <User size={iconSize} strokeWidth={iconStroke} />
+                        </IconWrapper>
+                    </div>
+                )}
             </div>
-            <InputWithIcon
-                icon={Search}
-                sizeIcon={16}
-                placeholder="Kamu butuh apa? Cari disini yuk"
-                className="rounded-sm mt-2 text-sm"
-                onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                        const params = new URLSearchParams(searchParams);
-                        params.set("q", e.currentTarget.value);
-                        navigate(
-                            {
-                                pathname: "/search",
-                                search: `?${params.toString()}`,
-                            },
-                            {
-                                replace: true,
-                                preventScrollReset: false,
-                            }
-                        );
-                    }
-                }}
-            />
+            {!error && (
+                <InputWithIcon
+                    icon={Search}
+                    sizeIcon={16}
+                    placeholder="Kamu butuh apa? Cari disini yuk"
+                    className="rounded-sm mt-2 text-sm"
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            const params = new URLSearchParams(searchParams);
+                            params.set("q", e.currentTarget.value);
+                            navigate(
+                                {
+                                    pathname: "/search",
+                                    search: `?${params.toString()}`,
+                                },
+                                {
+                                    replace: true,
+                                    preventScrollReset: false,
+                                }
+                            );
+                        }
+                    }}
+                />
+            )}
         </header>
     );
 }

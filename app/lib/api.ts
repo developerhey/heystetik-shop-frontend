@@ -3,10 +3,12 @@ import axios, { AxiosError, type AxiosInstance } from "axios";
 export interface ApiError {
     status: number;
     message: string;
+    isMobile: boolean;
     data?: {
         success?: boolean;
         message?: string;
         error?: string;
+        data?: any;
     };
 }
 
@@ -24,17 +26,6 @@ const api: AxiosInstance = axios.create({
     timeout: 10000,
     headers: { "Content-Type": "application/json" },
 });
-
-// api.interceptors.request.use((request) => {
-//     // write down your request intercept.
-//     return AxiosLogger.requestLogger(request, {
-//         prefixText: "your prefix",
-//         dateFormat: "HH:MM:ss",
-//         headers: true,
-//         params: true,
-//         url: true
-//     });
-// });
 
 api.interceptors.response.use(
     (response) => response,

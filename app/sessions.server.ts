@@ -5,6 +5,7 @@ type SessionData = {
     user: {
         email: string;
         name: string;
+        id: string
     };
 };
 

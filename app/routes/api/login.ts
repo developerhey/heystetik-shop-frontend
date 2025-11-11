@@ -26,6 +26,7 @@ export async function action({ request }: Route.ActionArgs) {
         session.set("user", {
             email: response?.data?.user?.email ?? "",
             name: response?.data?.user?.fullname ?? "",
+            id: response?.data?.user?.id?.toString() ?? "",
         });
         await commitSession(session);
 

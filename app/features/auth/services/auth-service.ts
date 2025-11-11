@@ -95,6 +95,28 @@ export const registerStepPhoneOtp = ({
         RegisterResponseSchema
     );
 
+export const updatePhone = ({
+    phoneNumber,
+    otp,
+    userId,
+}: {
+    phoneNumber: string;
+    otp: string;
+    userId: string;
+}) =>
+    request<RegisterResponse>(
+        {
+            url: registrationPath + "phone-number",
+            method: "POST",
+            data: {
+                phone_number: phoneNumber,
+                verification_code: otp,
+                user_id: parseInt(userId),
+            },
+        },
+        RegisterResponseSchema
+    );
+
 export const registerStepEmail = ({ email }: { email: string }) =>
     request<RegisterResponse>(
         {

@@ -9,14 +9,6 @@ export async function action({ request }: Route.ActionArgs) {
 
     try {
         const response = await loginByGoogle({ token });
-        if (response.data?.user?.finish_register == false) {
-            return data(
-                {
-                    error: "Email belum terdaftar. Silahkan daftar terlebih dahulu",
-                },
-                { status: 401 }
-            );
-        }
         // Get current session
         const session = await getSession(request.headers.get("Cookie"));
         // Store credentials in session
@@ -24,6 +16,7 @@ export async function action({ request }: Route.ActionArgs) {
         session.set("user", {
             email: response?.data?.user?.email ?? "",
             name: response?.data?.user?.fullname ?? "",
+            id: response?.data?.user?.id?.toString() ?? "",
         });
         await commitSession(session);
 

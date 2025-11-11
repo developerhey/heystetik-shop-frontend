@@ -37,6 +37,7 @@ export default [
         route("register-personal-info", "routes/api/register-personal-info.ts"),
         route("add-address", "routes/api/add-address.ts"),
         route("update-address", "routes/api/update-address.ts"),
+        route("update-phone", "routes/api/update-phone.tsx"),
         route("delete-address", "routes/api/delete-address.ts"),
         route("set-main-address", "routes/api/set-main-address.ts"),
         route("order-product", "routes/api/order-product.ts"),
